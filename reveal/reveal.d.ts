@@ -1,7 +1,7 @@
 // Type definitions for Reveal 1.3.0
 // Project: https://github.com/hakimel/reveal.js/
 // Definitions by: grapswiz <https://github.com/grapswiz/>
-// Definitions: https://github.com/borisyankov/DefinitelyTyped
+// Definitions: https://github.com/DefinitelyTyped/DefinitelyTyped
 
 declare var Reveal:RevealStatic;
 
@@ -10,7 +10,7 @@ interface RevealStatic {
     configure:(diff:RevealOptions)=>void;
 
     // Navigation
-    slide(h:number, v:number, f?:number, o?:number);
+    slide(h:number, v:number, f?:number, o?:number):void;
     left():void;
     right():void;
     up():void;

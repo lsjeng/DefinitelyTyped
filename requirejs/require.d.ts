@@ -1,7 +1,7 @@
-// Type definitions for RequireJS 2.1.8
+// Type definitions for RequireJS 2.1.20
 // Project: http://requirejs.org/
 // Definitions by: Josh Baldwin <https://github.com/jbaldwin/>
-// Definitions: https://github.com/borisyankov/DefinitelyTyped
+// Definitions: https://github.com/DefinitelyTyped/DefinitelyTyped
 
 /*
 require-2.1.8.d.ts may be freely distributed under the MIT license.
@@ -28,6 +28,15 @@ WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
 FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
 OTHER DEALINGS IN THE SOFTWARE.
 */
+
+declare module 'module' {
+	var mod: {
+		config: () => any;
+		id: string;
+		uri: string;
+	}
+	export = mod;
+}
 
 interface RequireError extends Error {
 
@@ -79,6 +88,7 @@ interface RequireConfig {
 	// baseUrl.
 	paths?: { [key: string]: any; };
 
+
 	// Dictionary of Shim's.
 	// does not cover case of key->string[]
 	shim?: { [key: string]: RequireShim; };
@@ -105,6 +115,19 @@ interface RequireConfig {
 			[id: string]: string;
 		};
 	};
+
+	/**
+	* Allows pointing multiple module IDs to a module ID that contains a bundle of modules.
+	*
+	* @example
+	* requirejs.config({
+	*	bundles: {
+	*		'primary': ['main', 'util', 'text', 'text!template.html'],
+	*		'secondary': ['text!secondary.html']
+	*	}
+	* });
+	**/
+	bundles?: { [key: string]: string[]; };
 
 	/**
 	* AMD configurations, use module.config() to access in
@@ -157,8 +180,8 @@ interface RequireConfig {
 
 	/**
 	* Extra query string arguments appended to URLs that RequireJS
-	* uses to fetch resources.  Most useful to cachce bust when
-	* the browser or server is not configured correcty.
+	* uses to fetch resources.  Most useful to cache bust when
+	* the browser or server is not configured correctly.
 	*
 	* @example
 	* urlArgs: "bust= + (new Date()).getTime()
@@ -173,6 +196,20 @@ interface RequireConfig {
 	**/
 	scriptType?: string;
 
+	/**
+	* If set to true, skips the data-main attribute scanning done
+	* to start module loading. Useful if RequireJS is embedded in
+	* a utility library that may interact with other RequireJS
+	* library on the page, and the embedded version should not do
+	* data-main loading.
+	**/
+	skipDataMain?: boolean;
+
+	/**
+	* Allow extending requirejs to support Subresource Integrity
+	* (SRI).
+	**/
+	onNodeCreated?: (node: HTMLScriptElement, config: RequireConfig, moduleName: string, url: string) => void;
 }
 
 // todo: not sure what to do with this guy
@@ -263,6 +300,18 @@ interface Require {
 	toUrl(module: string): string;
 
 	/**
+	* Returns true if the module has already been loaded and defined.
+	* @param module Module to check
+	**/
+	defined(module: string): boolean;
+
+	/**
+	* Returns true if the module has already been requested or is in the process of loading and should be available at some point.
+	* @param module Module to check
+	**/
+	specified(module: string): boolean;
+
+	/**
 	* On Error override
 	* @param err
 	**/
@@ -322,6 +371,24 @@ interface RequireDefine {
 	*	callback return module definition
 	**/
 	(name: string, deps: string[], ready: Function): void;
+
+	/**
+	* Define a module with a name.
+	* @param name The name of the module.
+	* @param ready Callback function when the dependencies are loaded.
+	*	callback return module definition
+	**/
+	(name: string, ready: Function): void;
+
+	/**
+	* Used to allow a clear indicator that a global define function (as needed for script src browser loading) conforms
+	* to the AMD API, any global define function SHOULD have a property called "amd" whose value is an object.
+	* This helps avoid conflict with any other existing JavaScript code that could have defined a define() function
+	* that does not conform to the AMD API.
+	* define.amd.jQuery is specific to jQuery and indicates that the loader is able to account for multiple version
+	* of jQuery being loaded simultaneously.
+	*/
+	amd: Object;
 }
 
 // Ambient declarations for 'require' and 'define'

@@ -1,13 +1,36 @@
 // Type definitions for AmplifyJs 1.1.0
 // Project: http://amplifyjs.com/
 // Definitions by: Jonas Eriksson <https://github.com/joeriks/>
-// Definitions: https://github.com/borisyankov/DefinitelyTyped
+// Definitions: https://github.com/DefinitelyTyped/DefinitelyTyped
+
+/// <reference path="../jquery/jquery.d.ts" />
 
 interface amplifyRequestSettings {
     resourceId: string;
     data?: any;
-    success?: Function;
-    error?: Function;
+    success?: (...args: any[]) => void;
+    error?: (...args: any[]) => void;
+}
+
+interface amplifyDecoder {
+    (   
+        data?: any, 
+        status?: string, 
+        xhr?: JQueryXHR, 
+        success?: (...args: any[]) => void,
+        error?: (...args: any[]) => void
+    ): void
+}
+
+interface amplifyDecoders {
+    [decoderName: string]: amplifyDecoder;
+    jsSend: amplifyDecoder;
+}
+
+interface amplifyAjaxSettings extends JQueryAjaxSettings  {
+    cache?: any;
+    dataMap?: {} | ((data: any) => {});
+    decoder?: any /* string or amplifyDecoder */;
 }
 
 interface amplifyRequest {
@@ -28,7 +51,7 @@ interface amplifyRequest {
     *   success (optional): Function to invoke on success.
     *   error (optional): Function to invoke on error.
     */
-    (settings: amplifyRequestSettings);
+    (settings: amplifyRequestSettings): any;
 
     /***
     * Define a resource.
@@ -39,7 +62,7 @@ interface amplifyRequest {
     *   cache: See the cache section for more details.
     *   decoder: See the decoder section for more details.
     */
-    define(resourceId: string, requestType: string, settings?: any): void;
+    define(resourceId: string, requestType: string, settings?: amplifyAjaxSettings): void;
 
     /***
     * Define a custom request.
@@ -50,9 +73,9 @@ interface amplifyRequest {
     *   success: Callback to invoke on success.
     *   error: Callback to invoke on error.
     */
-    define(resourceId: string, resource: Function): void;
-	
-    decoders: any;
+    define(resourceId: string, resource: (settings: amplifyRequestSettings) => void): void;
+    
+    decoders: amplifyDecoders;
     cache: any;
 }
 
@@ -156,4 +179,4 @@ interface amplifyStatic {
 }
 
 declare var amplify: amplifyStatic;
-
+declare module "amplify" { export =amplify; }

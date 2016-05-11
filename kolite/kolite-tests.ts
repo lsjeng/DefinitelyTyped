@@ -2,6 +2,20 @@
 /// <reference path="../knockout/knockout.d.ts" />
 /// <reference path="kolite.d.ts" />
 
+function test_activityDefaults() {
+    ko.bindingHandlers.activity.defaultOptions = {
+        activityClass: 'fa fa-spinner fa-spin',
+        container: 'i',
+        inactiveClass: ''
+    };
+    
+    ko.bindingHandlers.activity.defaultOptions = {
+        activityClass: 'some Value'
+    };
+    
+    ko.bindingHandlers.activity.defaultOptions = {
+    };
+}
 function test_asyncCommand() {
     var saveCmd = ko.asyncCommand({
         execute: function (complete) {
@@ -27,6 +41,22 @@ function test_asyncCommand() {
         canExecute: function (isExecuting) {
             return !isExecuting && this.name()
         }
+    });
+}
+
+function test_asyncCommand_isExecuting() {
+    var primaryCommand = ko.asyncCommand({
+        execute: (complete) => {
+            $.when().always(complete);
+        },
+        canExecute: (isExecuting) => {
+            return !isExecuting;
+        }
+    });
+
+    var firstRun = true;
+    var canCancel = ko.computed(() => {
+        return firstRun && !primaryCommand.isExecuting();
     });
 }
 

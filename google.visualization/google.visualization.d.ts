@@ -1,21 +1,21 @@
 // Type definitions for Google Visualisation Apis
 // Project: https://developers.google.com/chart/
 // Definitions by: Dan Ludwig <https://github.com/danludwig>
-// Definitions: https://github.com/borisyankov/DefinitelyTyped
+// Definitions: https://github.com/DefinitelyTyped/DefinitelyTyped
 
-declare module google {
+declare namespace google {
 
     function load(visualization: string, version: string, packages: any): void;
     function setOnLoadCallback(handler: Function): void;
     function setOnLoadCallback(handler: () => void): void;
 
     //https://developers.google.com/chart/interactive/docs/reference
-    module visualization {
+    namespace visualization {
 
         export interface ChartSpecs {
             chartType: string;
-            containerId: string;
-            oprtions?: Object;
+            containerId?: string;
+            options?: Object;
             dataTable?: Object;
             dataSourceUrl?: string;
             query?: string;
@@ -58,7 +58,7 @@ declare module google {
             setRefreshInterval(interval: number): void;
             setOption(key: string, value: any): void;
             setOptions(options: Object): void;
-            setView(view_spec: DataView): void;
+            setView(view_spec: string): void;
         }
 
         //#endregion
@@ -71,17 +71,68 @@ declare module google {
             addColumn(descriptionObject: DataTableColumnDescription): number;
             addRow(cellObject: DataObjectCell): number;
             addRow(cellArray?: any[]): number;
-            addRows(count: number): number;
-            addRows(array: DataObjectCell[][]): number;
-            addRows(array: any[]): number;
+            addRows(numberOfEmptyRows: number): number;
+            addRows(rows: DataObjectCell[][]): number;
+            addRows(rows: any[][]): number;
+            clone(): DataTable;
+            getColumnId(columnIndex: number): string;
+            getColumnLabel(columnIndex: number): string;
+            getColumnPattern(columnIndex: number): string;
+            getColumnProperties(columnIndex: number): Properties;
+            getColumnProperty(columnIndex: number, name: string): any;
+            getColumnRange(columnIndex: number): { min: any; max: any };
+            getColumnRole(columnIndex: string): string;
+            getColumnType(columnIndex: number): string;
+            getDistinctValues(columnIndex: number): any[];
             getFilteredRows(filters: DataTableCellFilter[]): number[];
             getFormattedValue(rowIndex: number, columnIndex: number): string;
-            getValue(rowIndex: number, columnIndex: number): any;
             getNumberOfColumns(): number;
             getNumberOfRows(): number;
+            getProperty(rowIndex: number, columnIndex: number, name: string): any;
+            getProperties(rowIndex: number, columnIndex: number): Properties;
+            getRowProperties(rowIndex: number): Properties;
+            getRowProperty(rowIndex: number, name: string): Properties;
+            getSortedRows(sortColumn: number): number[];
+            getSortedRows(sortColumn: SortByColumn): number[];
+            getSortedRows(sortColumns: number[]): number[];
+            getSortedRows(sortColumns: SortByColumn[]): number[];
+            getTableProperties(): Properties;
+            getTableProperty(name: string): any;
+            getValue(rowIndex: number, columnIndex: number): any;
+            insertColumn(columnIndex: number, type: string, label?: string, id?: string): void;
+            insertRows(rowIndex: number, numberOfEmptyRows: number): void;
+            insertRows(rowIndex: number, rows: DataObjectCell[][]): void;
+            insertRows(rowIndex: number, rows: any[][]): void;
+            removeColumn(columnIndex: number): void;
+            removeColumns(columnIndex: number, numberOfColumns: number): void;
             removeRow(rowIndex: number): void;
             removeRows(rowIndex: number, numberOfRows: number): void;
+            setCell(rowIndex: number, columnIndex: number, value?: any, formattedValue?: string, properties?: Properties): void;
             setColumnLabel(columnIndex: number, label: string): void;
+            setColumnProperty(columnIndex: number, name: string, value: any): void;
+            setColumnProperties(columnIndex: number, properties: Properties): void;
+            setFormattedValue(rowIndex: number, columnIndex: number, formattedValue: string): void;
+            setProperty(rowIndex: number, columnIndex: number, name: string, value: any): void;
+            setProperties(rowIndex: number, columnIndex: number, properties: Properties): void;
+            setRowProperty(rowIndex: number, name: string, value: any): void;
+            setRowProperties(rowIndex: number, properties: Properties): void;
+            setTableProperty(name: string, value: any): void;
+            setTableProperties(properties: Properties): void;
+            setValue(rowIndex: number, columnIndex: number, value: any): void;
+            sort(sortColumn: number): number[];
+            sort(sortColumn: SortByColumn): number[];
+            sort(sortColumns: number[]): number[];
+            sort(sortColumns: SortByColumn[]): number[];
+            toJSON(): string;
+        }
+
+        export interface Properties {
+            [property: string]: any
+        }
+
+        export interface SortByColumn {
+            column: number;
+            desc: boolean;
         }
 
         export interface DataTableColumnDescription {
@@ -113,6 +164,9 @@ declare module google {
 
         export interface DataTableCellFilter {
             column: number;
+            value?: any;
+            minValue?: any;
+            maxValue?: any;
         }
 
         export interface DataObjectCell {
@@ -130,7 +184,7 @@ declare module google {
             maxValue?: any;
         }
 
-        function arrayToDataTable(data: any[]): DataTable;
+        function arrayToDataTable(data: any[], firstRowIsData?: boolean): DataTable;
 
         //#endregion
         //#region DataView
@@ -139,71 +193,87 @@ declare module google {
         export class DataView {
             constructor(data: DataTable);
             constructor(data: DataView);
+
+            getColumnId(columnIndex: number): String;
+            getColumnLabel(columnIndex: number): string;
+            getColumnPattern(columnIndex: number): string;
+            getColumnProperty(columnIndex: number, name: string): any;
+            getColumnRange(columnIndex: number): { min: any; max: any };
+            getColumnType(columnIndex: number): string;
+            getDistinctValues(columnIndex: number): any[];
+            getFilteredRows(filters: DataTableCellFilter[]): number[];
+            getFormattedValue(rowIndex: number, columnIndex: number): string;
+            getNumberOfColumns(): number;
+            getNumberOfRows(): number;
+            getProperty(rowIndex: number, columnIndex: number, name: string): any;
+            getProperties(rowIndex: number, columnIndex: number): Properties;
+            getRowProperty(rowIndex: number, name: string): Properties;
+            getSortedRows(sortColumn: number): number[];
+            getSortedRows(sortColumn: SortByColumn): number[];
+            getSortedRows(sortColumns: number[]): number[];
+            getSortedRows(sortColumns: SortByColumn[]): number[];
+            getTableProperty(name: string): any;
+            getValue(rowIndex: number, columnIndex: number): any;
+            getTableColumnIndex(viewColumnIndex: number): number;
+            getTableRowIndex(viewRowIndex: number): number;
+            getViewColumnIndex(tableColumnIndex: number): number;
+            getViewColumns(): number[];
+            getViewRowIndex(tableRowIndex: number): number;
+            getViewRows(): number[];
+
+            hideColumns(columnIndexes: number[]): void;
+            hideRows(min: number, max: number): void;
+            hideRows(rowIndexes: number[]): void;
+
             setColumns(columnIndexes: number[]): void;
+            setColumns(columnIndexes: ColumnSpec[]): void;
+            setColumns(columnIndexes: any[]): void;
+            setRows(min: number, max: number): void;
+            setRows(rowIndexes: number[]): void;
+
+            toDataTable(): DataTable;
+            toJSON(): string;
+        }
+
+        export interface ColumnSpec {
+            calc: (dataTable: DataTable, row: number) => any;
+            type: string;
+            label?: string;
+            id?: string;
+            sourceColumn?: number;
+            properties?: Properties;
+            role?: string;
         }
 
         //#endregion
         //#region GeoChart
 
         //https://google-developers.appspot.com/chart/interactive/docs/gallery/geochart
-        export class GeoChart {
-            constructor(element: Element);
-
-            // https://developers.google.com/chart/interactive/docs/gallery/geochart?hl=fr&csw=1#Methods
+        export class GeoChart extends ChartBase {
             draw(data: DataTable, options: GeoChartOptions): void;
-            getSelection(): GeoChartSelection[];
-            setSelection(selection: VisualizationSelectionArray[]): void;
-            clearChart(): void;
         }
 
         // https://developers.google.com/chart/interactive/docs/gallery/geochart?hl=fr&csw=1#Configuration_Options
         export interface GeoChartOptions {
             backgroundColor?: any;
-            colorAxis?: GeoChartColorAxis;
+            colorAxis?: ChartColorAxis;
             datalessRegionColor?: string;
             displayMode?: string;
             enableRegionInteractivity?: boolean;
             height?: number;
             keepAspectRatio?: boolean;
-            legend?: GeoChartLegend;
+            legend?: ChartLegend;
             region?: string;
             magnifyingGlass?: GeoChartMagnifyingGlass;
             markerOpacity?: number;
             resolution?: string;
-            sizeAxis?: GeoChartAxis;
-            tooltip?: GeoChartTooltip;
+            sizeAxis?: ChartSizeAxis;
+            tooltip?: ChartTooltip;
             width?: number;
-        }
-        export interface GeoChartAxis {
-            maxSize?: number;
-            maxValue?: number;
-            minSize?: number;
-            minValue?: number;
-        }
-        export interface GeoChartColorAxis extends GeoChartAxis {
-            minValue?: number;
-            maxValue?: number;
-            values?: number[];
-            colors?: string[];
-        }
-        export interface GeoChartTextStyle {
-            color?: string;
-            fontName?: string;
-            fontSize?: number;
-            bold?: boolean;
-            italic?: boolean;
-        }
-        export interface GeoChartLegend {
-            numberFormat?: string;
-            textStyle?: GeoChartTextStyle;
         }
         export interface GeoChartMagnifyingGlass {
             enable?: boolean;
             zoomFactor?: number;
-        }
-        export interface GeoChartTooltip {
-            textStyle?: GeoChartTextStyle;
-            trigger?: string;
         }
         export interface GeoChartRegionClickEvent {
             region: string;
@@ -215,19 +285,72 @@ declare module google {
         //#endregion
         //#region Common
 
-        export interface ChartArea {
-            top: any;
-            left: any;
-            width: any;
-            height: any;
+        export interface ChartAnnotations {
+            boxStyle?: ChartBoxStyle;
+            textStyle?: ChartTextStyle;
+        }
+
+        export interface ChartBoxStyle {
+            stroke?: string;
+            strokeWidth?: number;
+            rx?: number;
+            ry?: number;
+            gradient?: {
+                color1: string;
+                color2: string;
+                x1: string;
+                y1: string;
+                x2: string;
+                y2: string;
+                useObjectBoundingBoxUnits?: boolean;
+            }
         }
 
         export interface ChartTextStyle {
-            color?: string;
             fontName?: string;
             fontSize?: number;
             bold?: boolean;
             italic?: boolean;
+            color?: string;
+            auraColor?: string;
+            opacity?: number;
+        }
+
+        export interface ChartCrosshair {
+            color?: string;
+            focused?: {
+                color?: string;
+                opacity?: number;
+            }
+            opacity?: number;
+            orientation?: string;
+            selected?: {
+                color?: string;
+                opacity?: number;
+            }
+            trigger?: string;
+        }
+
+        export interface ChartExplorer {
+            actions?: string[];
+            axis?: string;
+            keepInBounds?: boolean;
+            maxZoomIn?: number;
+            maxZoomOut?: number;
+            zoomDelta?: number;
+        }
+
+        export interface ChartStroke {
+            stroke: string;
+            strokeWidth: number;
+            fill: string;
+        }
+
+        export interface ChartArea {
+            top?: any;
+            left?: any;
+            width?: any;
+            height?: any;
         }
 
         export interface ChartLegend {
@@ -235,12 +358,14 @@ declare module google {
             maxLines?: number;
             position?: string;
             textStyle?: ChartTextStyle;
+            numberFormat?: string;
         }
 
         // https://google-developers.appspot.com/chart/interactive/docs/animation
         export interface TransitionAnimation {
             duration?: number;
             easing?: string; // linear, in, out, inAndOut
+            startup?: boolean;
         }
 
         export interface ChartAxis {
@@ -249,6 +374,7 @@ declare module google {
             direction?: number; // The direction in which the values along the horizontal axis grow. Specify -1 to reverse the order of the values.
             format?: string; // icu pattern set http://icu-project.org/apiref/icu4c/classDecimalFormat.html#_details
             gridlines?: ChartGridlines;
+            minorGridlines?: ChartGridlines;
             logScale?: boolean;
             textPosition?: string;
             textStyle?: ChartTextStyle;
@@ -269,12 +395,6 @@ declare module google {
         }
 
         export interface ChartGridlines {
-            color?: string;
-            count?: number;
-            minorGridlines?: ChartMinorGridlines;
-        }
-
-        export interface ChartMinorGridlines {
             color?: string;
             count?: number;
         }
@@ -298,6 +418,14 @@ declare module google {
             height: number;
         }
 
+        export interface ChartColorAxis {
+            minValue?: number;
+            maxValue?: number;
+            values?: number[];
+            colors?: string[];
+            legend?: ChartLegend;
+        }
+
         export interface ChartLayoutInterface {
             getBoundingBox(id: string): ChartBoundingBox;
             getChartAreaBoundingBox(): ChartBoundingBox;
@@ -307,34 +435,97 @@ declare module google {
             getYLocation(position: number, axisIndex?: number): number;
         }
 
+        export interface GroupWidth {
+            groupWidth: any; // number | string
+        }
+
         export interface VisualizationSelectionArray {
             column?: number;
             row?: number;
+        }
+
+        export interface Candlestick {
+            hollowIsRising?: boolean;
+            fallingColor?: ChartStroke;
+            risingColor?: ChartStroke;
+        }
+
+        class ChartBase {
+            constructor(element: Element);
+            getSelection(): VisualizationSelectionArray[];
+            setSelection(selection: VisualizationSelectionArray[]): void;
+            clearChart(): void;
+            getImageURI(): string;
+        }
+
+        class CoreChartBase extends ChartBase {
+            getBoundingBox(id: string): ChartBoundingBox;
+            getChartAreaBoundingBox(): ChartBoundingBox;
+            getChartLayoutInterface(): ChartLayoutInterface;
+            getHAxisValue(position: number, axisIndex?: number): number;
+            getVAxisValue(position: number, axisIndex?: number): number;
+            getXLocation(position: number, axisIndex?: number): number;
+            getYLocation(position: number, axisIndex?: number): number;
+        }
+
+        //#endregion
+        //#region ScatterChart
+
+        // https://google-developers.appspot.com/chart/interactive/docs/gallery/scatterchart
+        export class ScatterChart extends CoreChartBase {
+            draw(data: DataTable, options?: ScatterChartOptions): void;
+            draw(data: DataView, options?: ScatterChartOptions): void;
+        }
+
+        export interface ScatterChartOptions {
+            aggregationTarget?: string;
+            animation?: TransitionAnimation;
+            annotations?: ChartAnnotations;
+            axisTitlesPosition?: string; // in, out, none
+            backgroundColor?: any;
+            chartArea?: ChartArea;
+            colors?: string[];
+            crosshair?: ChartCrosshair;
+            curveType?: string;
+            dataOpacity?: number;
+            enableInteractivity?: boolean;
+            explorer?: ChartExplorer;
+            fontSize?: number;
+            fontName?: string;
+            forceIFrame?: boolean;
+            hAxis?: ChartAxis;
+            height?: number;
+            legend?: ChartLegend;
+            lineWidth?: number;
+            pointSize?: number;
+            selectionMode?: string;
+            series?: any;
+            theme?: string;
+            title?: string;
+            titlePosition?: string;
+            titleTextStyle?: ChartTextStyle;
+            tooltip?: ChartTooltip;
+            vAxis?: ChartAxis;
+            width?: number;
         }
 
         //#endregion
         //#region ColumnChart
 
         // https://google-developers.appspot.com/chart/interactive/docs/gallery/columnchart
-        export class ColumnChart {
-            constructor(element: Element);
-
-            // https://google-developers.appspot.com/chart/interactive/docs/gallery/columnchart#Methods
-            draw(data: DataTable, options?: ColumnChartOptions): void;
-            draw(data: DataView, options?: ColumnChartOptions): void;
-            getChartLayoutInterface(): ChartLayoutInterface;
-            getSelection(): any[];
-            setSelection(selection: any[]): void;
-            clearChart(): void;
+        export class ColumnChart extends CoreChartBase {
+            draw(data: DataTable, options: ColumnChartOptions): void;
+            draw(data: DataView, options: ColumnChartOptions): void;
         }
 
         // https://google-developers.appspot.com/chart/interactive/docs/gallery/columnchart#Configuration_Options
         export interface ColumnChartOptions {
             aggregationTarget?: string;
             animation?: TransitionAnimation;
+            annotations?: ChartAnnotations;
             axisTitlesPosition?: string; // in, out, none
             backgroundColor?: any;
-            bar?: ColumnChartBarOptions;
+            bar?: GroupWidth;
             chartArea?: ChartArea;
             colors?: string[];
             enableInteractivity?: boolean;
@@ -358,36 +549,29 @@ declare module google {
             width?: number;
         }
 
-        export interface ColumnChartBarOptions {
-            groupWidth: any;
-        }
-
         //#endregion
         //#region LineChart
 
         // https://google-developers.appspot.com/chart/interactive/docs/gallery/linechart
-        export class LineChart {
-            constructor(element: Element);
-
-            // https://google-developers.appspot.com/chart/interactive/docs/gallery/linechart#Methods
-            draw(data: DataTable, options: any): void;
-            draw(data: DataView, options: any): void;
-            getChartLayoutInterface(): ChartLayoutInterface;
-            getSelection(): any[];
-            setSelection(selection: any[]): void;
-            clearChart(): void;
+        export class LineChart extends CoreChartBase {
+            draw(data: DataTable, options: LineChartOptions): void;
+            draw(data: DataView, options: LineChartOptions): void;
         }
 
         // https://google-developers.appspot.com/chart/interactive/docs/gallery/linechart#Configuration_Options
         export interface LineChartOptions {
             aggregationTarget?: string;
             animation?: TransitionAnimation;
+            annotations?: ChartAnnotations;
             axisTitlesPosition?: string;
             backgroundColor?: any;
             chartArea?: ChartArea;
             colors?: string[];
+            crosshair?: ChartCrosshair;
             curveType?: string;
+            dataOpacity?: number;
             enableInteractivity?: boolean;
+            explorer?: ChartExplorer;
             focusTarget?: string;
             fontSize?: number;
             fontName?: string;
@@ -396,6 +580,7 @@ declare module google {
             interpolateNulls?: boolean;
             legend?: ChartLegend;
             lineWidth?: number;
+            orientation?: string;
             pointSize?: number;
             reverseCategories?: boolean;
             selectionMode?: string // single / multiple
@@ -417,9 +602,10 @@ declare module google {
         export interface BarChartOptions {
             aggregationTarget?: string;
             animation?: TransitionAnimation;
+            annotations?: ChartAnnotations;
             axisTitlesPosition?: string; // in, out, none
             backgroundColor?: any;
-            bar?: ColumnChartBarOptions;
+            bar?: GroupWidth;
             chartArea?: ChartArea;
             colors?: string[];
             dataOpacity?: number;
@@ -427,6 +613,7 @@ declare module google {
             focusTarget?: string;
             fontSize?: number;
             fontName?: string;
+            hAxes?: any;
             hAxis?: ChartAxis;
             height?: number;
             isStacked?: boolean;
@@ -444,32 +631,687 @@ declare module google {
         }
 
         // https://google-developers.appspot.com/chart/interactive/docs/gallery/barchart
-        export class BarChart {
-            constructor(element: Element);
+        export class BarChart extends CoreChartBase {
             draw(data: DataTable, options: BarChartOptions): void;
             draw(data: DataView, options: BarChartOptions): void;
-            getBoundingBox(id: string): ChartBoundingBox;
-            getChartAreaBoundingBox(): ChartBoundingBox;
-            getChartLayoutInterface(): ChartLayoutInterface;
-            getHAxisValue(position: number, axisIndex?: number): number;
-            getVAxisValue(position: number, axisIndex?: number): number;
-            getXLocation(position: number, axisIndex?: number): number;
-            getYLocation(position: number, axisIndex?: number): number;
-            getSelection(): any[];
-            setSelection(selection: any[]): void;
-            clearChart(): void;
+        }
 
+        //#endregion
+        //#region Histogram
+
+        // https://google-developers.appspot.com/chart/interactive/docs/gallery/histogram
+        export class Histogram extends CoreChartBase {
+            draw(data: DataTable, options: HistogramOptions): void;
+            draw(data: DataView, options: HistogramOptions): void;
+        }
+
+        // https://google-developers.appspot.com/chart/interactive/docs/gallery/histogram#Configuration_Options
+        export interface HistogramOptions {
+            animation?: TransitionAnimation;
+            axisTitlesPosition?: string; // in, out, none
+            backgroundColor?: any;
+            bar?: GroupWidth;
+            chartArea?: ChartArea;
+            colors?: string[];
+            dataOpacity?: number;
+            enableInteractivity?: boolean;
+            focusTarget?: string;
+            fontSize?: number;
+            fontName?: string;
+            hAxis?: ChartAxis;
+            histogram?: HistogramHistogramOptions;
+            height?: number;
+            interpolateNulls?: boolean;
+            isStacked?: boolean;
+            legend?: ChartLegend;
+            orientation?: string;
+            reverseCategories?: boolean;
+            series?: any;
+            theme?: string;
+            title?: string;
+            titlePosition?: string;
+            titleTextStyle?: ChartTextStyle;
+            tooltip?: ChartTooltip;
+            vAxes?: any;
+            vAxis?: ChartAxis;
+            width?: number;
+        }
+
+        export interface HistogramHistogramOptions {
+            bucketSize?: number;
+            hideBucketItems?: boolean;
+            lastBucketPercentile?: number;
+        }
+
+        //#endregion
+        //#region AreaChart
+
+        // https://google-developers.appspot.com/chart/interactive/docs/gallery/areachart
+        export class AreaChart extends CoreChartBase {
+            draw(data: DataTable, options: AreaChartOptions): void;
+            draw(data: DataView, options: AreaChartOptions): void;
+        }
+
+        // https://google-developers.appspot.com/chart/interactive/docs/gallery/areachart#Configuration_Options
+        export interface AreaChartOptions {
+            aggregationTarget?: string;
+            animation?: TransitionAnimation;
+            areaOpacity?: number;
+            axisTitlesPosition?: string;
+            backgroundColor?: any;
+            chartArea?: ChartArea;
+            colors?: string[];
+            crosshair?: ChartCrosshair;
+            dataOpacity?: number;
+            enableInteractivity?: boolean;
+            explorer?: ChartExplorer;
+            focusTarget?: string;
+            fontSize?: number;
+            fontName?: string;
+            hAxis?: ChartAxis;
+            height?: number;
+            interpolateNulls?: boolean;
+            isStacked?: boolean;
+            legend?: ChartLegend;
+            lineWidth?: number;
+            orientation?: string;
+            pointSize?: number;
+            reverseCategories?: boolean;
+            selectionMode?: string // single / multiple
+            series?: any;
+            theme?: string;
+            title?: string;
+            titlePosition?: string;
+            titleTextStyle?: ChartTextStyle;
+            tooltip?: ChartTooltip;
+            vAxes?: any;
+            vAxis?: ChartAxis;
+            width?: number;
+        }
+
+        //#endregion
+        //#region AnnotationChart
+
+        // https://developers.google.com/chart/interactive/docs/gallery/annotationchart
+        export class AnnotationChart extends CoreChartBase
+        {
+            draw(data: DataTable, options: AnnotationChartOptions): void;
+            draw(data: DataView, options: AnnotationChartOptions): void;
+            setVisibleChartRange(start: Date, end: Date): void;
+            getVisibleChartRange(): {start: Date; end: Date };
+            hideDataColumns(columnIndexes: number | number[]): void;
+            showDataColumns(columnIndexes: number | number[]): void;
+        }
+
+        // https://developers.google.com/chart/interactive/docs/gallery/annotationchart#Configuration_Options
+        export interface AnnotationChartOptions
+        {
+            allowHtml?: boolean;
+            allValuesSuffix?: string;
+            annotationsWidth?: number;
+            colors?: string[];
+            dateFormat?: string;
+            displayAnnotations?: boolean;
+            displayAnnotationsFilter?: boolean;
+            displayDateBarSeparator?: boolean;
+            displayExactValues?: boolean;
+            displayLegendDots?: boolean;
+            displayLegendValues?: boolean;
+            displayRangeSelector?: boolean;
+            displayZoomButtons?: boolean;
+            fill?: number;
+            legendPosition?: string;
+            max?: number;
+            min?: number;
+            numberFormats?: any;
+            scaleColumns?: number[];
+            scaleFormat?: string;
+            scaleType?: string;
+            thickness?: number;
+            zoomEndTime?: Date;
+            zoomStartTime?: Date;
+        }
+
+        //#endregion
+        //#region SteppedAreaChart
+
+        // https://google-developers.appspot.com/chart/interactive/docs/gallery/areachart
+        export class SteppedAreaChart extends CoreChartBase {
+            draw(data: DataTable, options: SteppedAreaChartOptions): void;
+            draw(data: DataView, options: SteppedAreaChartOptions): void;
+        }
+
+        // https://google-developers.appspot.com/chart/interactive/docs/gallery/areachart#Configuration_Options
+        export interface SteppedAreaChartOptions {
+            aggregationTarget?: string;
+            animation?: TransitionAnimation;
+            areaOpacity?: number;
+            axisTitlesPosition?: string;
+            backgroundColor?: any;
+            chartArea?: ChartArea;
+            colors?: string[];
+            connectSteps?: boolean;
+            enableInteractivity?: boolean;
+            focusTarget?: string;
+            fontSize?: number;
+            fontName?: string;
+            hAxis?: ChartAxis;
+            height?: number;
+            interpolateNulls?: boolean;
+            isStacked?: boolean;
+            legend?: ChartLegend;
+            reverseCategories?: boolean;
+            selectionMode?: string // single / multiple
+            series?: any;
+            theme?: string;
+            title?: string;
+            titlePosition?: string;
+            titleTextStyle?: ChartTextStyle;
+            tooltip?: ChartTooltip;
+            vAxes?: any;
+            vAxis?: ChartAxis;
+            width?: number;
+        }
+
+        //#endregion
+        //#region PieChart
+
+        // https://google-developers.appspot.com/chart/interactive/docs/gallery/piechart
+        export class PieChart extends CoreChartBase {
+            draw(data: DataTable, options: PieChartOptions): void;
+            draw(data: DataView, options: PieChartOptions): void;
+        }
+
+        // https://google-developers.appspot.com/chart/interactive/docs/gallery/piechart#Configuration_Options
+        export interface PieChartOptions {
+            backgroundColor?: any;
+            chartArea?: ChartArea;
+            colors?: string[];
+            enableInteractivity?: boolean;
+            fontSize?: number;
+            fontName?: string;
+            height?: number;
+            is3D?: boolean;
+            legend?: ChartLegend;
+            pieHole?: number;
+            pieSliceBorderColor?: string;
+            pieSliceText?: string;
+            pieSliceTextStyle?: ChartTextStyle;
+            pieStartAngle?: number;
+            reverseCategories?: boolean;
+            pieResidueSliceColor?: string;
+            pieResidueSliceLabel?: string;
+            slices?: any;
+            sliceVisibilityThreshold?: number;
+            title?: string;
+            titleTextStyle?: ChartTextStyle;
+            tooltip?: ChartTooltip;
+            width?: number;
+        }
+
+        //#endregion
+        //#region BubbleChart
+
+        // https://google-developers.appspot.com/chart/interactive/docs/gallery/scatterchart
+        export class BubbleChart extends CoreChartBase {
+            draw(data: DataTable, options?: BubbleChartOptions): void;
+            draw(data: DataView, options?: BubbleChartOptions): void;
+        }
+
+        export interface BubbleChartOptions {
+            animation?: TransitionAnimation;
+            axisTitlesPosition?: string; // in, out, none
+            backgroundColor?: any;
+            bubble?: ChartBubble;
+            chartArea?: ChartArea;
+            colors?: string[];
+            colorAxis?: ChartColorAxis;
+            enableInteractivity?: boolean;
+            explorer?: ChartExplorer;
+            fontSize?: number;
+            fontName?: string;
+            forceIFrame?: boolean;
+            hAxis?: ChartAxis;
+            height?: number;
+            legend?: ChartLegend;
+            selectionMode?: string;
+            series?: any;
+            sizeAxis?: ChartSizeAxis;
+            sortBubblesBySize?: boolean;
+            theme?: string;
+            title?: string;
+            titlePosition?: string;
+            titleTextStyle?: ChartTextStyle;
+            tooltip?: ChartTooltip;
+            vAxis?: ChartAxis;
+            width?: number;
+        }
+
+        export interface ChartBubble {
+            opacity?: number;
+            stroke?: string;
+            textStyle?: ChartTextStyle;
+        }
+
+        export interface ChartSizeAxis {
+            maxSize?: number;
+            maxValue?: number;
+            minSize?: number;
+            minValue?: number;
+        }
+
+        //#endregion
+        //#region TreeMap
+
+        // https://google-developers.appspot.com/chart/interactive/docs/gallery/treemap
+        export class TreeMap extends ChartBase {
+            draw(data: DataTable, options?: TreeMapOptions): void;
+            draw(data: DataView, options?: TreeMapOptions): void;
+            goUpAndDraw(): void;
+            getMaxPossibleDepth(): number;
+        }
+
+        // https://google-developers.appspot.com/chart/interactive/docs/gallery/treemap#Configuration_Options
+        export interface TreeMapOptions {
+            fontColor?: string;
+            fontFamily?: string;
+            fontSize?: number;
+            forceIFrame?: boolean;
+            headerColor?: string;
+            headerHeight?: number;
+            headerHighlightColor?: string;
+            hintOpacity?: number;
+            maxColor?: string;
+            maxDepth?: number;
+            maxHighlightColor?: string;
+            maxPostDepth?: number;
+            maxColorValue?: number;
+            midColor?: string;
+            midHighlightColor?: string;
+            minColor?: string;
+            minHighlightColor?: string;
+            minColorValue?: number;
+            showScale?: boolean;
+            showTooltips?: boolean;
+            textStyle?: ChartTextStyle;
+            title?: string;
+            titleTextStyle?: ChartTextStyle;
+            useWeightedAverageForAggregation?: boolean;
+        }
+
+        //#endregion
+        //#region Table
+
+        // https://google-developers.appspot.com/chart/interactive/docs/gallery/table
+        export class Table extends ChartBase {
+            draw(data: DataTable, options?: TableOptions): void;
+            draw(data: DataView, options?: TableOptions): void;
+        }
+
+        // https://google-developers.appspot.com/chart/interactive/docs/gallery/table#Configuration_Options
+        export interface TableOptions {
+            allowHtml?: boolean;
+            alternatingRowStyle?: boolean;
+            cssClassName?: CssClassNames;
+            firstRowNumber?: number;
+            height?: string;
+            page?: string;
+            pageSize?: number;
+            rtlTable?: boolean;
+            scrollLeftStartPosition?: number;
+            showRowNumber?: boolean;
+            sort?: string;
+            sortAscending?: boolean;
+            sortColumn?: number;
+            startPage?: number;
+            width?: string;
+        }
+
+        export interface CssClassNames {
+            headerRow?: string;
+            tableRow?: string;
+            oddTableRow?: string;
+            selectedTableRow?: string;
+            hoverTableRow?: string;
+            headerCell?: string;
+            tableCell?: string;
+            rowNumberCell?: string;
+        }
+
+        //#endregion
+        //#region Timeline
+
+        // https://google-developers.appspot.com/chart/interactive/docs/gallery/timeline
+        export class Timeline {
+            constructor(element: Element);
+            draw(data: DataTable, options?: TimelineOptions): void;
+            draw(data: DataView, options?: TimelineOptions): void;
+            clearChart(): void;
+        }
+
+        // https://google-developers.appspot.com/chart/interactive/docs/gallery/timeline#Configuration_Options
+        export interface TimelineOptions {
+            avoidOverlappingGridLines?: boolean;
+            backgroundColor?: any;
+            colors?: string[];
+            enableInteractivity?: boolean;
+            forceIFrame?: boolean;
+            height?: number;
+            timeline?: {
+                barLabelStyle?: LabelStyle;
+                colorByRowLabel?: boolean;
+                groupByRowLabel?: boolean;
+                rowLabelStyle?: LabelStyle;
+                showRowLabels?: boolean;
+                singleColor?: string;
+            }
+            width?: number;
+        }
+
+        export interface LabelStyle {
+            color: string;
+            fontName: string;
+            fontSize: string;
+        }
+
+        //#endregion
+        //#region CandlestickChart
+
+        // https://google-developers.appspot.com/chart/interactive/docs/gallery/candlestickchart
+        export class CandlestickChart extends CoreChartBase {
+            draw(data: DataTable, options: CandlestickChartOptions): void;
+            draw(data: DataView, options: CandlestickChartOptions): void;
+        }
+
+        // https://google-developers.appspot.com/chart/interactive/docs/gallery/candlestickchart#Configuration_Options
+        export interface CandlestickChartOptions {
+            aggregationTarget?: string;
+            animation?: TransitionAnimation;
+            axisTitlesPosition?: string;
+            backgroundColor?: any;
+            bar?: GroupWidth;
+            candlestick?: Candlestick;
+            chartArea?: ChartArea;
+            colors?: string[];
+            enableInteractivity?: boolean;
+            focusTarget?: string;
+            fontSize?: number;
+            fontName?: string;
+            hAxis?: ChartAxis;
+            height?: number;
+            legend?: ChartLegend;
+            orientation?: string;
+            reverseCategories?: boolean;
+            selectionMode?: string // single / multiple
+            series?: any;
+            theme?: string;
+            title?: string;
+            titlePosition?: string;
+            titleTextStyle?: ChartTextStyle;
+            tooltip?: ChartTooltip;
+            vAxes?: any;
+            vAxis?: ChartAxis;
+            width?: number;
+        }
+
+        //#endregion
+        //#region ComboChart
+
+        // https://google-developers.appspot.com/chart/interactive/docs/gallery/combochart
+        export class ComboChart extends CoreChartBase {
+            draw(data: DataTable, options: ComboChartOptions): void;
+            draw(data: DataView, options: ComboChartOptions): void;
+        }
+
+        // https://google-developers.appspot.com/chart/interactive/docs/gallery/combochart#configuration-options
+        export interface ComboChartOptions {
+            aggregationTarget?: string;
+            animation?: TransitionAnimation;
+            annotations?: ChartAnnotations;
+            areaOpacity?: number;
+            axisTitlesPosition?: string; // in, out, none
+            backgroundColor?: any;
+            bar?: GroupWidth;
+            candlestick?: Candlestick;
+            chartArea?: ChartArea;
+            colors?: string[];
+            crosshair?: ChartCrosshair;
+            curveType?: string;
+            dataOpacity?: number;
+            enableInteractivity?: boolean;
+            focusTarget?: string;
+            fontSize?: number;
+            fontName?: string;
+            forceIFrame?: boolean;
+            hAxis?: ChartAxis;
+            height?: number;
+            interpolateNulls?: boolean;
+            isStacked?: boolean;
+            legend?: ChartLegend;
+            lineDashStyle?: number[];
+            lineWidth?: number;
+            orientation?: string;
+            pointShape?: string;
+            pointSize?: number;
+            pointsVisible?: boolean;
+            reverseCategories?: boolean;
+            selectionMode?: string;// single / multiple
+            series?: any;
+            seriesType?: string;
+            theme?: string;
+            title?: string;
+            titlePosition?: string;
+            titleTextStyle?: ChartTextStyle;
+            tooltip?: ChartTooltip;
+            vAxes?: any;
+            vAxis?: ChartAxis;
+            width?: number;
         }
 
         //#endregion
         //#region Events
 
-        module events {
+        namespace events {
             function addListener(visualization: any, eventName: string, callback: Function): any;
             function addListener(visualization: any, eventName: string, callback: (...args: any[]) => void): any;
             function removeListener(listener: any): void;
             function removeAllListeners(visualization: any): void;
             function trigger(visualization: any, eventName: string, args?: any): void;
+        }
+
+        //#endregion
+        //#region Formatter
+
+        class DefaultFormatter {
+            /**
+             * Reformats the data in the specified column.
+             *
+             * @param data - A DataTable containing the data to reformat. You cannot use a DataView here.
+             * @param columnIndex - The zero-based index of the column to format. To format multiple columns, you must call this method multiple times, with different colIndex values.
+             */
+            format(data: DataTable, columnIndex: number): void;
+        }
+
+        export interface ArrowFormatOptions {
+            /**
+             * A number indicating the base value, used to compare against the cell value. If the cell value is higher, the cell will include a green up arrow; if the cell value is lower, it will include a red down arrow; if the same, no arrow.
+             */
+            base?: number;
+        }
+
+        /**
+         * Adds an up or down arrow, indicating whether the cell value is above or below a specified value.
+         */
+        export class ArrowFormat extends DefaultFormatter {
+            constructor(options?: ArrowFormatOptions);
+        }
+
+        export interface BarFormatOptions {
+            /**
+             * A number that is the base value to compare the cell value against. If the cell value is higher, it will be drawn to the right of the base; if lower, it will be drawn to the left. Default value is 0.
+             */
+            base?: number;
+            /**
+             * A string indicating the negative value section of bars. Possible values are 'red', 'green' and 'blue'; default value is 'red'.
+             */
+            colorNegative?: string;
+            /**
+             * A string indicating the color of the positive value section of bars. Possible values are 'red', 'green' and 'blue'. Default is 'blue'.
+             */
+            colorPositive?: string;
+            /**
+             * A boolean indicating if to draw a 1 pixel dark base line when negative values are present. The dark line is there to enhance visual scanning of the bars. Default value is 'false'.
+             */
+            drawZeroLine?: boolean;
+            /**
+             * The maximum number value for the bar range. Default value is the highest value in the table.
+             */
+            max?: number;
+            /**
+             * The minimum number value for the bar range. Default value is the lowest value in the table.
+             */
+            min?: number;
+            /**
+             * If true, shows values and bars; if false, shows only bars. Default value is true.
+             */
+            showValue?: boolean;
+            /**
+             * Thickness of each bar, in pixels. Default value is 100.
+             */
+            width?: number;
+        }
+
+        /**
+         * Adds a colored bar, the direction and color of which indicates whether the cell value is above or below a specified value.
+         */
+        export class BarFormat extends DefaultFormatter {
+            constructor(options?: BarFormatOptions);
+        }
+
+        /**
+         * Colors a cell according to whether the values fall within a specified range.
+         */
+        export class ColorFormat extends DefaultFormatter {
+            constructor();
+            /**
+             * Specifies a foreground color and/or background color to a cell, depending on the cell value. Any cell with a value in the specified from—to range will be assigned color and bgcolor. It is important to realize that the range is non-inclusive, because creating a range from 1—1,000 and a second from 1,000— 2,000 will not cover the value 1,000!
+             *
+             * @param from - [String, Number, Date, DateTime, or TimeOfDay] The lower boundary (inclusive) of the range, or null. If null, it will match -∞. String boundaries are compared alphabetically against string values.
+             * @param to - [String, Number, Date, DateTime, or TimeOfDay] The high boundary (non-inclusive) of the range, or null. If null, it will match +∞. String boundaries are compared alphabetically against string values.
+             * @param color - The color to apply to text in matching cells. Values can be either '#RRGGBB' values or defined color constants, (example: '#FF0000' or 'red').
+             * @param bgcolor - The color to apply to the background of matching cells. Values can be either '#RRGGBB' values or defined color constants, (example: '#FF0000' or 'red').
+             */
+            addRange(from: any, to: any, color: string, bgcolor: string): void;
+            /**
+             * Assigns a background color from a range, according to the cell value. The color is scaled to match the cell's value within a range from a lower boundary color to an upper boundary color. Note that this method cannot compare string values, as addRange() can. Tip: Color ranges are often hard for viewers to gauge accurately; the simplest and easiest to read range is from a fully saturated color to white (e.g., #FF0000—FFFFFF).
+             *
+             * @param from - [Number, Date, DateTime, or TimeOfDay] The lower boundary (inclusive) of the range, or null. If null, it will match -∞.
+             * @param to - [Number, Date, DateTime, or TimeOfDay] The higher boundary (non-inclusive) of the range, or null. If null, it will match +∞.
+             * @param color - The color to apply to text in matching cells. This color is the same for all cells, no matter what their value.
+             * @param fromBgColor - The background color for cells holding values at the low end of the gradient. Values can be either '#RRGGBB' values or defined color constants, (example: '#FF0000' or 'red').
+             * @param toBgColor - The background color for cells holding values at the high end of the gradient. Values can be either '#RRGGBB' values or defined color constants, (example: '#FF0000' or 'red').
+             */
+            addGradientRange(from: any, to: any, color: string, fromBgColor: string, toBgColor: string): void;
+        }
+
+        export interface DateFormatOptions {
+            /**
+             * A quick formatting option for the date. The following string values are supported, reformatting the date February 28, 2016 as shown:
+             * - 'short' - Short format: e.g., "2/28/16"
+             * - 'medium' - Medium format: e.g., "Feb 28, 2016"
+             * - 'long' - Long format: e.g., "February 28, 2016"
+             * You cannot specify both formatType and pattern.
+             */
+            formatType?: string;
+            /**
+             * A custom format pattern to apply to the value, similar to the ICU date and time format.
+             * You cannot specify both formatType and pattern.
+             * @example
+             * var formatter3 = new google.visualization.DateFormat({pattern: "EEE, MMM d, ''yy"});
+             */
+            pattern?: string;
+            /**
+             * The time zone in which to display the date value. This is a numeric value, indicating GMT + this number of time zones (can be negative). Date object are created by default with the assumed time zone of the computer on which they are created; this option is used to display that value in a different time zone. For example, if you created a Date object of 5pm noon on a computer located in Greenwich, England, and specified timeZone to be -5 (options['timeZone'] = -5, or Eastern Pacific Time in the US), the value displayed would be 12 noon.
+             */
+            timeZone?: number;
+        }
+
+        /**
+         * Formats a Date or DateTime value in several different ways, including "January 1, 2009," "1/1/09" and "Jan 1, 2009."
+         */
+        export class DateFormat extends DefaultFormatter {
+            constructor(options: DateFormatOptions);
+            /**
+             * Returns the formatted value of a given value. This method does not require a DataTable.
+             */
+            formatValue(value: Date): string;
+        }
+
+        export interface NumberFormatOptions {
+            /**
+             * A character to use as the decimal marker. The default is a dot (.).
+             */
+            decimalSymbol?: string;
+            /**
+             * A number specifying how many digits to display after the decimal. The default is 2. If you specify more digits than the number contains, it will display zeros for the smaller values. Truncated values will be rounded (5 rounded up).
+             */
+            fractionDigits?: number;
+            /**
+             * A character to be used to group digits to the left of the decimal into sets of three. Default is a comma (,).
+             */
+            groupingSymbol?: string;
+            /**
+             * The text color for negative values. No default value. Values can be any acceptable HTML color value, such as "red" or "#FF0000".
+             */
+            negativeColor?: string;
+            /**
+             * A boolean, where true indicates that negative values should be surrounded by parentheses. Default is true.
+             */
+            negativeParens?: boolean;
+            /**
+             * A format string. When provided, all other options are ignored, except negativeColor.
+             * The format string is a subset of the ICU pattern set. For instance, {pattern:'#,###%'} will result in output values "1,000%", "750%", and "50%" for values 10, 7.5, and 0.5.
+             */
+            pattern?: string;
+            /**
+             * A string prefix for the value, for example "$".
+             */
+            prefix?: string;
+            /**
+             * A string suffix for the value, for example "%".
+             */
+            suffix?: string;
+        }
+
+        /**
+         * Formats various aspects of numeric values.
+         */
+        export class NumberFormat extends DefaultFormatter {
+            constructor(options?: NumberFormatOptions);
+            /**
+             * Returns the formatted value of a given value. This method does not require a DataTable.
+             */
+            formatValue(value: number): string;
+        }
+
+        /**
+         * Concatenates cell values on the same row into a specified cell, along with arbitrary text.
+         */
+        export class PatternFormat {
+            /**
+             * Constructor.
+             * Does not take an options object. Instead, it takes a string pattern parameter.
+             * This is a string that describes which column values to put into the destination column, along with any arbitrary text. Embed placeholders in your string to indicate a value from another column to embed. The placeholders are {#}, where # is a the index of a source column to use. The index is an index in the srcColumnIndices array from the format() method below. To include a literal { or } character, escape it like this: \{ or \}. To include a literal \ mark, escape it as \\.
+             */
+            constructor(pattern: string);
+            /**
+             * The standard formatting call, with a few additional parameters
+             *
+             * @param dataTable - The DataTable on which to operate.
+             * @param srcColumnIndices - An array of one or more (zero-based) column indices to pull as the sources from the underlying DataTable. This will be used as a data source for the pattern parameter in the constructor. The column numbers do not have to be in sorted order.
+             * @param opt_dstColumnIndex - The destination column to place the output of the pattern manipulation. If not specified, the first element in srcColumIndices will be used as the destination.
+             */
+            format(dataTable: DataTable, srcColumnIndices: number[], opt_dstColumnIndex?: number): void;
         }
 
         //#endregion

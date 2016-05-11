@@ -19,7 +19,7 @@ interface String {
     blue: string;
 }
 
-declare module node {
+declare namespace node {
 
     /**
      * {@link http://npmjs.org/doc/json.html}
@@ -36,7 +36,7 @@ declare module node {
 /**
  * {@link http://github.com/isaacs/minimatch}
  */
-declare module minimatch {
+declare namespace minimatch {
 
     /**
      * A minimal matching utility options.
@@ -114,17 +114,16 @@ declare module minimatch {
 /* GRUNT CONFIGURATION
  *********************/
 
-declare module grunt {
+declare namespace grunt {
 
-    module config {
-       
+    namespace config {
+
         /**
          * {@link http://gruntjs.com/sample-gruntfile}
          */
         interface IProjectConfig{
-            [plugin: string]: any
-            pkg: any; // unfortunate. It is actually a string
-        }                
+            [plugin: string]: any;
+        }
 
         /**
          * {@link http://gruntjs.com/api/grunt.config}
@@ -193,10 +192,16 @@ declare module grunt {
              */
             requires(prop: string, ...andProps: string[]): void
             requires(prop: string[], ...andProps: string[][]): void
+
+            /**
+             * Recursively merges properties of the specified configObject into the current project configuration.
+             * You can use this method to append configuration options, targets, etc., to already defined tasks.
+             */
+            merge<T>(configObject: T): void;
         }
     }
 
-    module event {
+    namespace event {
         /**
          * {@link http://github.com/hij1nx/EventEmitter2}
          */
@@ -271,7 +276,7 @@ declare module grunt {
         }
     }
 
-    module fail {
+    namespace fail {
 
         enum ErrorCode {
             NoError = 0,
@@ -300,7 +305,7 @@ declare module grunt {
         }
     }
 
-    module file {
+    namespace file {
 
         /**
          * {@link http://gruntjs.com/api/grunt.file#grunt.file.defaultencoding}
@@ -336,7 +341,7 @@ declare module grunt {
              * whose return value will be used as the destination file's contents. If
              * this function returns `false`, the file copy will be aborted.
              */
-            process?: (buffer: NodeBuffer) => boolean
+            process?: (buffer: Buffer) => boolean
         }
 
         /**
@@ -370,21 +375,21 @@ declare module grunt {
              * Returns a string, unless options.encoding is null in which case it returns a Buffer.
              */
             read(filepath: string): string
-            read(filepath: string, options: IFileEncodedOption): NodeBuffer
+            read(filepath: string, options: IFileEncodedOption): Buffer
 
             /**
              * Read a file's contents, parsing the data as JSON and returning the result.
              * @see FileModule.read for a list of supported options.
              */
             readJSON(filepath: string): any
-            readJSON(filepath: string, options: IFileEncodedOption): NodeBuffer
+            readJSON(filepath: string, options: IFileEncodedOption): Buffer
 
             /**
              * Read a file's contents, parsing the data as YAML and returning the result.
              * @see FileModule.read for a list of supported options.
              */
             readYAML(filepath: string): any
-            readYAML(filepath: string, options: IFileEncodedOption): NodeBuffer
+            readYAML(filepath: string, options: IFileEncodedOption): Buffer
 
             /**
              * Write the specified contents to a file, creating intermediate directories if necessary.
@@ -393,7 +398,8 @@ declare module grunt {
              * @param contents If `contents` is a Buffer, encoding is ignored.
              * @param options If an encoding is not specified, default to grunt.file.defaultEncoding.
              */
-            write(filepath: string, contents: NodeBuffer, options?: IFileEncodedOption): void
+            write(filepath: string, contents: string, options?: IFileEncodedOption): void
+            write(filepath: string, contents: Buffer): void
 
             /**
              * Copy a source file to a destination path, creating intermediate directories if necessary.
@@ -604,7 +610,7 @@ declare module grunt {
             /**
              * All {@link IExpandedFilesConfig.src} matches are relative to (but don't include) this path.
              */
-            cwd?: boolean
+            cwd?: string
 
             /**
              * Replace any existing extension with this value in generated {@link IExpandedFilesConfig.dest} paths.
@@ -640,7 +646,7 @@ declare module grunt {
         }
     }
 
-    module log {
+    namespace log {
 
         /**
          * Grunt output should look consistent, and maybe even pretty.
@@ -689,6 +695,11 @@ declare module grunt {
              * Log a list of obj properties (good for debugging flags).
              */
             writeflags(obj: any): T
+
+            /**
+             * Log an warning with grunt.log.warn
+             */
+            warn(msg: string): T
         }
 
         /**
@@ -716,7 +727,7 @@ declare module grunt {
         }
     }
 
-    module option {
+    namespace option {
 
         /**
          * {@link http://gruntjs.com/api/grunt.option}
@@ -749,7 +760,7 @@ declare module grunt {
 
     }
 
-    module task {
+    namespace task {
 
         /**
          * {@link http://gruntjs.com/api/grunt.task}
@@ -785,6 +796,22 @@ declare module grunt {
              */
             registerMultiTask(taskName: string, taskFunction: Function): void
             registerMultiTask(taskName: string, taskDescription: string, taskFunction: Function): void
+
+            /**
+             * Check with the name, if a task exists in the registered tasks.
+             * @param name The task name to check.
+             * @since 0.4.5
+             */
+            exists(name: string): boolean;
+
+            /**
+             * Rename a task. This might be useful if you want to override the default behavior of a task, while retaining the old name.
+             * Note that if a task has been renamed, the this.name and this.nameArgs properties will change accordingly.
+             * @see ITask
+             * @param oldname The previous name of the task.
+             * @param newname The new name for the task.
+             */
+            renameTask(oldname: string, newname: string): void
         }
 
         /**
@@ -809,6 +836,12 @@ declare module grunt {
              * This method is used internally by the multi task system this.files / grunt.task.current.files property.
              */
             normalizeMultiTaskFiles(data: grunt.config.IProjectConfig, targetname?: string): Array<grunt.file.IFileMap>
+
+            /**
+             * The currently running task or multitask.
+             * @see http://gruntjs.com/api/inside-tasks
+             */
+            current: grunt.task.IMultiTask<any>
         }
 
         interface AsyncResultCatcher {
@@ -816,9 +849,10 @@ declare module grunt {
              * Either false or an Error object may be passed to the done function
              * to instruct Grunt that the task has failed.
              */
-            done(success: boolean): void;
-            done(error: Error): void;
-            done(result: any): void;
+            (success: boolean): void;
+            (error: Error): void;
+            (result: any): void;
+            (): void;
         }
 
         /**
@@ -978,7 +1012,7 @@ declare module grunt {
         interface ITaskCompactOptions extends grunt.task.ITaskOptions, grunt.file.IFilesConfig {}
     }
 
-    module template {
+    namespace template {
 
         interface TemplateModule {
 
@@ -1035,7 +1069,7 @@ declare module grunt {
         }
     }
 
-    module util {
+    namespace util {
 
         /**
          * {@link http://gruntjs.com/api/grunt.util}
@@ -1138,7 +1172,7 @@ declare module grunt {
             /**
              * The command to execute. It should be in the system path.
              */
-            cmd: string
+            cmd?: string
 
             /**
              * If specified, the same grunt bin that is currently running will be
@@ -1231,13 +1265,6 @@ declare module grunt {
     }
 
     interface ITaskComponents extends grunt.task.CommonTaskModule {
-
-        /**
-         * The currently running task or multitask.
-         * @see IMultiTask for when to cast
-         */
-        current: grunt.task.ITask
-
         /**
          * Load task-related files from the specified directory, relative to the Gruntfile.
          * This method can be used to load task-related files from a local Grunt plugin by
@@ -1291,4 +1318,10 @@ interface IGrunt extends grunt.IConfigComponents, grunt.fail.FailModule, grunt.I
      * The current Grunt version, as a string. This is just a shortcut to the grunt.package.version property.
      */
     version: string
+}
+
+// NodeJS Support
+declare module 'grunt' {
+    var grunt: IGrunt;
+    export = grunt;
 }

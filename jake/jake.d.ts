@@ -1,14 +1,15 @@
 // Type definitions for jake
 // Project: https://github.com/mde/jake
 // Definitions by: Kon <http://phyzkit.net/>
-// Definitions: https://github.com/borisyankov/DefinitelyTyped
+// Definitions: https://github.com/DefinitelyTyped/DefinitelyTyped
 
 /// <reference path="../node/node.d.ts" />
 
 /**
  * Complets an asynchronous task, allowing Jake's execution to proceed to the next task
+ * @param value A value to return from the task.
  */
-declare function complete(): void;
+declare function complete(value?: any): void;
 
 /**
  * Creates a description for a Jake Task (or FileTask, DirectoryTask). When invoked, the description that iscreated will be associated with whatever Task is created next.
@@ -21,7 +22,6 @@ declare function desc(description:string): void;
  * @param name The name of the DiretoryTask
  */
 declare function directory(name:string): jake.DirectoryTask;
-
 
 /**
  * Causes Jake execution to abort with an error. Allows passing an optional error code, which will be used to set the exit-code of exiting process.
@@ -41,6 +41,16 @@ declare function fail(...err:any[]): void;
 declare function file(name:string, prereqs?:string[], action?:()=>void, opts?:jake.FileTaskOptions): jake.FileTask;
 
 /**
+ * Creates Jake FileTask from regex patterns
+ * @name name/pattern of the Task
+ * @param source calculated from the name pattern
+ * @param prereqs Prerequisites to be run before this task
+ * @param action The action to perform for this task
+ * @param opts Perform this task asynchronously. If you flag a task with this option, you must call the global `complete` method inside the task's action, for execution to proceed to the next task.
+ */
+declare function rule(pattern: RegExp, source: string | { (name: string): string; }, prereqs?: string[], action?: () => void, opts?: jake.TaskOptions): void;
+
+/**
  * Creates a namespace which allows logical grouping of tasks, and prevents name-collisions with task-names. Namespaces can be nested inside of other namespaces.
  * @param name The name of the namespace
  * @param scope The enclosing scope for the namespaced tasks
@@ -57,7 +67,16 @@ declare function task(name:string, prereqs?:string[], action?:(...params:any[])=
 declare function task(name:string, action?:(...params:any[])=>any, opts?:jake.TaskOptions): jake.Task;
 declare function task(name:string, opts?:jake.TaskOptions, action?:(...params:any[])=>any): jake.Task;
 
-declare module jake{
+/**
+ * @param name The name of the NpmPublishTask
+ * @param packageFiles The files to include in the package
+ * @param definition A function that creates the package definition
+ */
+declare function npmPublishTask(name:string, packageFiles:string[]): jake.NpmPublishTask;
+declare function npmPublishTask(name:string, definition?:()=>void): jake.NpmPublishTask;
+
+
+declare namespace jake{
 
     ////////////////////////////////////////////////////////////////////////////////////
 	// File-utils //////////////////////////////////////////////////////////////////////
@@ -113,8 +132,13 @@ declare module jake{
 		 * stop execution on error, default true
 		 */
 		breakOnError?:boolean;
+
+		/**
+		*
+		*/
+		windowsVerbatimArguments?: boolean
 	}
-	export function exec(cmds:string[], callback?:()=>void, opts?:ExecOptions);
+	export function exec(cmds:string[], callback?:()=>void, opts?:ExecOptions):void;
 
 
 	/**
@@ -124,11 +148,7 @@ declare module jake{
 	 * @event stderr When the stderr for the child-process recieves data. This streams the stderr data. Passes one arg, the chunk of data.
 	 * @event error When a shell-command
 	 */
-	export interface Exec extends NodeEventEmitter {
-		constructor(cmds:string[], callback?:()=>void, opts?:ExecOptions);
-		constructor(cmds:string[], opts?:ExecOptions,  callback?:()=>void);
-		constructor(cmds:string,   callback?:()=>void, opts?:ExecOptions);
-		constructor(cmds:string,   opts?:ExecOptions,  callback?:()=>void);
+	export interface Exec extends NodeJS.EventEmitter {
 		append(cmd:string): void;
 		run(): void;
 	}
@@ -175,6 +195,11 @@ declare module jake{
 		 * @default false
 		 */
 		async?: boolean;
+
+		/**
+		 * number of parllel async tasks
+		*/
+		parallelLimit?: number;
 	}
 
 	/**
@@ -182,7 +207,7 @@ declare module jake{
 	 *
 	 * @event complete
 	 */
-	export class Task implements NodeEventEmitter {
+	export class Task implements NodeJS.EventEmitter {
 		/**
 		 * @name name The name of the Task
 		 * @param prereqs Prerequisites to be run before this task
@@ -201,17 +226,18 @@ declare module jake{
 		 */
 		reenable(): void;
 
-		addListener(event: string, listener: Function): NodeEventEmitter;
-        on(event: string, listener: Function): NodeEventEmitter;
-        once(event: string, listener: Function): NodeEventEmitter;
-        removeListener(event: string, listener: Function): NodeEventEmitter;
-        removeAllListeners(event?: string): NodeEventEmitter;
-        setMaxListeners(n: number): void;
-        listeners(event: string): Function[];
-        emit(event: string, arg1?: any, arg2?: any): boolean;
+		addListener(event: string, listener: Function): this;
+		on(event: string, listener: Function): this;
+		once(event: string, listener: Function): this;
+		removeListener(event: string, listener: Function): this;
+		removeAllListeners(event?: string): this;
+		setMaxListeners(n: number): this;
+		getMaxListeners(): number;
+		listeners(event: string): Function[];
+		emit(event: string, ...args: any[]): boolean;
+		listenerCount(type: string): number;
+		value: any;
 	}
-
-
 
 	export class DirectoryTask{
 		/**
@@ -274,7 +300,6 @@ declare module jake{
 		exclude(...file:RegExp[]): void;
 		exclude(file:FileFilter[]): void;
 		exclude(...file:FileFilter[]): void;
-
 
 		/**
 		 * Populates the FileList from the include/exclude rules with a list of
@@ -375,14 +400,15 @@ declare module jake{
 
 	export class NpmPublishTask{
 		constructor(name:string, packageFiles:string[]);
+		constructor(name:string, definition?:()=>void);
 	}
 
-	export function addListener(event: string, listener: Function);
-	export function on(event: string, listener: Function);
-	export function once(event: string, listener: Function): void;
-	export function removeListener(event: string, listener: Function): void;
-	export function removeAllListener(event: string): void;
+	export function addListener(event: string, listener: Function): NodeJS.EventEmitter;
+	export function on(event: string, listener: Function): NodeJS.EventEmitter;
+	export function once(event: string, listener: Function): NodeJS.EventEmitter;
+	export function removeListener(event: string, listener: Function): NodeJS.EventEmitter;
+	export function removeAllListener(event: string): NodeJS.EventEmitter;
 	export function setMaxListeners(n: number): void;
-	export function listeners(event: string): { Function; }[];
-	export function emit(event: string, arg1?: any, arg2?: any): void;
+	export function listeners(event: string): Function[];
+	export function emit(event: string, ...args: any[]): boolean;
 }

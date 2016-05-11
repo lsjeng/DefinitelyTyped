@@ -1,15 +1,13 @@
 // Type definitions for svg.js
 // Project: http://www.svgjs.com/
 // Definitions by: Sean Hess <https://seanhess.github.io/>
-// Definitions: https://github.com/borisyankov/DefinitelyTyped
+// Definitions: https://github.com/DefinitelyTyped/DefinitelyTyped
 // Reference: http://documentup.com/wout/svg.js
 
 // TODO sets
 // TODO gradients
 
-declare var SVG:svgjs.Library;
-
-declare module svgjs {
+declare namespace svgjs {
 
     export interface LinkedHTMLElement extends HTMLElement {
         instance: Element;
@@ -28,10 +26,8 @@ declare module svgjs {
     export interface Doc extends Element {
         svg(data:string):any;
         pattern(w:number, h:number, add:(e:Element)=>void):Element;
-        
-        defs():Defs;
 
-        use(element:Element):Element;
+        defs():Defs;
 
         clear():void;
 
@@ -52,7 +48,7 @@ declare module svgjs {
         in(source:FilterSource):Filter;
         sourceAlpha:FilterSource;
         source:FilterSource;
-    } 
+    }
 
     export interface FilterSource {
 
@@ -88,10 +84,14 @@ declare module svgjs {
         move(x:number, y:number, anchor?:boolean):Element;
         x(x:number, anchor?:boolean):Element;
         y(y:number, anchor?:boolean):Element;
-        
+        x(): number;
+        y(): number;
+
         center(x:number, y:number, anchor?:boolean):Element;
         cx(x:number, anchor?:boolean):Element;
         cy(y:number, anchor?:boolean):Element;
+        cx(): number;
+        cy(): number;
 
         size(w:number, h:number, anchor?:boolean):Element;
 
@@ -101,11 +101,11 @@ declare module svgjs {
         remove():void;
 
         each(iterator:(i?:number, children?:Element[])=>void, deep?:boolean):void;
-        filter(adder:(filter:Filter)=>void):Element;        
+        filter(adder:(filter:Filter)=>void):Element;
 
         transform(t:Transform):Element;
-        
-        
+        transform(): Transform;
+
         style(name:string, value:string):Element;
         style(obj:Object):Element;
         style(name:string):string;
@@ -189,7 +189,7 @@ declare module svgjs {
         move(x:number, y:number, anchor?:boolean):Animation;
         x(x:number, anchor?:boolean):Animation;
         y(y:number, anchor?:boolean):Animation;
-        
+
         center(x:number, y:number, anchor?:boolean):Animation;
         cx(x:number, anchor?:boolean):Animation;
         cy(y:number, anchor?:boolean):Animation;
@@ -199,13 +199,13 @@ declare module svgjs {
         to(value:number):Animation;
         after(cb:()=>void):Animation;
 
-        // TODO style, etc, bbox... 
+        // TODO style, etc, bbox...
     }
-    
+
     export interface Parent {
         put(element:Element, i?:number):Element;
         add(element:Element, i?:number):Element;
-        children:Element[];
+        children():Element[];
 
         rect(w:number, h:number):Element;
         ellipse(w:number, h:number):Element;
@@ -218,7 +218,8 @@ declare module svgjs {
         path(data:string):Element;
         image(url:string, w?:number, h?:number):Element;
         text(text:string):Element;
-        text(adder:(element:Element)=>void):Element;        
+        text(adder:(element:Element)=>void):Element;
+        use(element:Element):Element;
 
         group():Element;
     }
@@ -267,4 +268,9 @@ declare module svgjs {
         e?: number;
         f?: number;
     }
+}
+
+declare var SVG:svgjs.Library;
+declare module "svg.js" {
+    export = SVG
 }

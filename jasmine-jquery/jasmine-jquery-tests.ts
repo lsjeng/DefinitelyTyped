@@ -16,7 +16,9 @@ describe("Jasmine jQuery extension", () => {
         expect($('<span></span>').addClass('js-something')).toBeMatchedBy('.js-something');
         expect($('<span></span>')).toExist();
         expect($('<div id="some-id"></div>')).toHaveAttr('id', 'some-id');
+        expect($('<input type="checkbox" checked="checked"/>')).toHaveAttr('type');
         expect($('<div id="some-id"></div>')).toHaveProp('id', 'some-id');
+        expect($('<input type="checkbox" checked="checked"/>')).toHaveProp('checked');
         expect($('')).toHaveBeenTriggered();
         expect($('')).toHaveBeenTriggeredOn('#some-id');
         expect($('')).toHaveBeenTriggeredOnAndWith('#some-id', 'eventParam');
@@ -37,6 +39,10 @@ describe("Jasmine jQuery extension", () => {
         expect($('<input type="text" />').focus()).toBeFocused();
         //expect($form).toHandle("submit")
         //expect($form).toHandleWith("submit", yourSubmitCallback)
+        expect($('<div></div>')).toBeInDOM();
+        expect($('<div><span class="some-class"></span></div>')).toContainElement('span.some-class');
+        expect($('<div><ul></ul><h1>header</h1></div>')).toContainHtml('<ul></ul>');
+        expect($('<div><ul></ul><h1>header</h1></div>')).toContainText('header')
     });
 
     it("Handles HTML Fixtures", () => {
@@ -132,4 +138,4 @@ describe("Jasmine jQuery extension", () => {
             expect(spyEvent).toHaveBeenStopped();
         });
     });
-})
+});

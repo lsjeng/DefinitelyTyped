@@ -1,16 +1,19 @@
 // Type definitions for Backbone-relational 0.8.5
 // Project: http://backbonerelational.org/
 // Definitions by: Eirik Hoem <https://github.com/eirikhm/>
-// Definitions: https://github.com/borisyankov/DefinitelyTyped
+// Definitions: https://github.com/DefinitelyTyped/DefinitelyTyped
 
 
 /// <reference path="../jquery/jquery.d.ts" />
-
 /// <reference path="../backbone/backbone.d.ts" />
 
-declare module Backbone {
-    export class RelationalModel extends Model {
-        static extend(properties:any, classProperties?:any):any; // do not use, prefer TypeScript's extend functionality
+declare namespace Backbone {
+    class RelationalModel extends Model {
+        /**
+        * Do not use, prefer TypeScript's extend functionality.
+        **/
+        //private static extend(properties:any, classProperties?:any):any;
+
         relations:any;
         subModelTypes:any;
         subModelTypeAttribute:any;
@@ -32,15 +35,15 @@ declare module Backbone {
 
         toJSON():any;
 
-        setup();
+        static setup();
 
-        build(attributes:any, options?:any);
+        static build(attributes:any, options?:any);
 
-        findOrCreate(attributes:string, options?:any);
+        static findOrCreate(attributes:string, options?:any);
 
-        findOrCreate(attributes:number, options?:any);
+        static findOrCreate(attributes:number, options?:any);
 
-        findOrCreate(attributes:any, options?:any);
+        static findOrCreate(attributes:any, options?:any);
     }
 
     export class Relation extends Model {
@@ -58,7 +61,7 @@ declare module Backbone {
 
         setRelated(related:Model):void;
 
-        setRelated(related:Collection):void;
+        setRelated(related:Collection<Model>):void;
 
         getReverseRelations(model:RelationalModel):Relation;
 
@@ -78,15 +81,15 @@ declare module Backbone {
 
         setKeyContents(keyContents:number[]):void;
 
-        setKeyContents(keyContents:Collection):void;
+        setKeyContents(keyContents:Collection<Model>):void;
 
         onChange(model:Model, attr:any, options:any):void;
 
-        handleAddition(model:Model, coll:Collection, options:any):void;
+        handleAddition(model:Model, coll:Collection<Model>, options:any):void;
 
-        handleRemoval(model:Model, coll:Collection, options:any):void;
+        handleRemoval(model:Model, coll:Collection<Model>, options:any):void;
 
-        handleReset(coll:Collection, options:any):void;
+        handleReset(coll:Collection<Model>, options:any):void;
 
         tryAddRelated(model:Model, coll:any, options:any):void;
 
@@ -135,22 +138,22 @@ declare module Backbone {
 
         processOrphanRelations():void;
 
-        retroFitRelation(relation:RelationalModel, create:boolean):Collection;
+        retroFitRelation(relation:RelationalModel, create:boolean):Collection<Model>;
 
-        getCollection(type:RelationalModel, create:boolean):Collection;
+        getCollection(type:RelationalModel, create:boolean):Collection<Model>;
 
         getObjectByName(name:string):any;
 
 
         resolveIdForItem(type:any, item:any):any;
 
-        find(type:any, item:string):RelationalModel;
+        static find(type:any, item:string):RelationalModel;
 
-        find(type:any, item:number):RelationalModel;
+        static find(type:any, item:number):RelationalModel;
 
-        find(type:any, item:RelationalModel):RelationalModel;
+        static find(type:any, item:RelationalModel):RelationalModel;
 
-        find(type:any, item:any):RelationalModel;
+        static find(type:any, item:any):RelationalModel;
 
         register(model:RelationalModel):void;
 
@@ -158,7 +161,7 @@ declare module Backbone {
 
         update(model:RelationalModel):void;
 
-        unregister(model:RelationalModel, collection:Collection, options:any):void;
+        unregister(model:RelationalModel, collection:Collection<Model>, options:any):void;
 
         reset():void;
 
@@ -166,3 +169,4 @@ declare module Backbone {
     }
 
 }
+

@@ -1,11 +1,12 @@
 // Type definitions for node-promptly 1.1.1
 // Project: https://github.com/IndigoUnited/node-promptly
 // Definitions by: Dan Spencer <https://github.com/danrspencer>
-// Definitions: https://github.com/borisyankov/DefinitelyTyped
+// Definitions: https://github.com/DefinitelyTyped/DefinitelyTyped
 
 ///<reference path="../node/node.d.ts"/>
 
 declare module "promptly" {
+  import stream = require('stream');
 
   interface Callback {
     (err: Error, value: string): void;
@@ -17,8 +18,8 @@ declare module "promptly" {
     validator?: any;
     retry?: boolean;
     silent?: boolean;
-    input?: ReadableStream;
-    output?: WritableStream;
+    input?: NodeJS.ReadableStream;
+    output?: NodeJS.WritableStream;
   }
 
   export function prompt(message: string, fn?: Callback):any;

@@ -1,7 +1,7 @@
-// Type definitions for jQuery.cycle.js 2.9999.81 (15-JAN-2013)
+// Type definitions for jQuery.cycle.js
 // Project: http://jquery.malsup.com/cycle/
-// Definitions by: François Guillot <http://fguillot.developpez.com/>
-// Definitions: https://github.com/borisyankov/DefinitelyTyped
+// Definitions by: FranÃ§ois Guillot <http://fguillot.developpez.com/>
+// Definitions: https://github.com/DefinitelyTyped/DefinitelyTyped
 
 
 /// <reference path="../jquery/jquery.d.ts"/>

@@ -1,4 +1,5 @@
 /// <reference path="../../jasmine/jasmine.d.ts" />
+/// <reference path="jasmine.extensions.d.ts" />
 /// <reference path="../knockout.d.ts" />
 /// <reference path="../../knockout.mapping/knockout.mapping.d.ts" />
 
@@ -363,11 +364,11 @@ describe('Templating', function() {
         // and external (non-rewritten) ones
         var originalBindingProvider = ko.bindingProvider.instance;
         ko.bindingProvider.instance = {
-            nodeHasBindings: function(node, bindingContext) {
-                return (node.tagName == 'EM') || originalBindingProvider.nodeHasBindings(node, bindingContext);
+            nodeHasBindings: function(node) {
+                return ((<Element>node).tagName == 'EM') || originalBindingProvider.nodeHasBindings(node);
             },
             getBindings: function(node, bindingContext) {
-                if (node.tagName == 'EM')
+                if ((<Element>node).tagName == 'EM')
                     return { text: ++model.numBindings };
                 return originalBindingProvider.getBindings(node, bindingContext);
             }

@@ -1,7 +1,7 @@
 /// <reference path="../knockout/knockout.d.ts" />
 /// <reference path="ko-grid.d.ts" />
 
-module KoGridTests
+namespace KoGridTests
 {
     export interface IGridItem {
         name: string;
@@ -19,7 +19,7 @@ module KoGridTests
         }
 
         public createDefaultGridOptions<Type>(dataArray: KnockoutObservableArray<Type>, selectedItems: KnockoutObservableArray<Type>): kg.GridOptions<Type> {
-            var result = {
+            return {
                 data: dataArray,
                 displaySelectionCheckbox: false,
                 footerVisible: false,
@@ -28,7 +28,6 @@ module KoGridTests
                 plugins: null,
                 selectedItems: selectedItems
             };
-            return result;
         }
     }
 }

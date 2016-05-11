@@ -1,20 +1,21 @@
-// Type definitions for jquery.dynatree 1.2
+// Type definitions for jquery.dynatree 1.2.5
 // Project: http://code.google.com/p/dynatree/
-// Definitions by: https://github.com/fdecampredon
-// Definitions: https://github.com/borisyankov/DefinitelyTyped
+// Definitions by: François de Campredon <https://github.com/fdecampredon>
+// Definitions: https://github.com/DefinitelyTyped/DefinitelyTyped
 
 
 /// <reference path="../jquery/jquery.d.ts"/>
+/// <reference path="../jqueryui/jqueryui.d.ts"/>
+
+declare namespace JQueryUI {
+    interface UI {
+        dynatree: DynatreeNamespace
+    }
+}
 
 interface JQuery {
     dynatree(options?: DynatreeOptions): DynaTree;
     dynatree(option?: string, ...rest: any[]): any;
-}
-
-interface JQueryStatic {
-    ui: {
-        dynatree: DynatreeNamespace;
-    };
 }
 
 interface DynaTree {
@@ -39,8 +40,8 @@ interface DynaTree {
     renderInvisibleNodes(): void;
     selectKey(key: string, flag: string): DynaTreeNode;
     serializeArray(stopOnParents: boolean): any[];
-    toDict(): any;
-    visit(fn: (node: DynaTreeNode) =>boolean, includeRoot: boolean): void;
+    toDict(includeRoot?: boolean): any;
+    visit(fn: (node: DynaTreeNode) =>boolean, includeRoot?: boolean): void;
 }
 
 
@@ -53,7 +54,7 @@ interface DynaTreeNode {
     appendAjax(ajaxOptions: JQueryAjaxSettings): void;
     countChildren(): number;
     deactivate(): void;
-    expand(flag: string): void;
+    expand(flag: boolean): void;
     focus(): void;
     getChildren(): DynaTreeNode[];
     getEventTargetType(event: Event): string;
@@ -77,15 +78,16 @@ interface DynaTreeNode {
     makeVisible(): boolean;
     move(targetNode: DynaTreeNode, mode: string): boolean;
     reload(force: boolean): void;
+    reloadChildren(callback?: (node: DynaTreeNode, isOk: boolean) => any): void;
     remove(): void;
     removeChildren(): void;
     render(useEffects: boolean, includeInvisible: boolean): void;
     resetLazy(): void;
-    scheduleAction(mode: string, ms: number);
-    select(flag: string): void;
+    scheduleAction(mode: string, ms: number): void;
+    select(flag: boolean): void;
     setLazyNodeStatus(status: number): void;
     setTitle(title: string): void;
-    sortChildren(cmp?: (a: DynaTreeNode, b: DynaTreeNode) =>number, deep?: boolean);
+    sortChildren(cmp?: (a: DynaTreeNode, b: DynaTreeNode) =>number, deep?: boolean): void;
     toDict(recursive: boolean, callback?: (node: any) =>any): any;
     toggleExpand(): void;
     toggleSelect(): void;
@@ -176,8 +178,8 @@ interface DynaTreeDataModel {
 
 interface DynaTreeDNDOptions {
     autoExpandMS?: number; // Expand nodes after n milliseconds of hovering.
-    preventVoidMoves?: boolean; // Prevent dropping nodes 'before self', etc. 
-
+    preventVoidMoves?: boolean; // Prevent dropping nodes 'before self', etc.
+    revert: boolean; // true: slide helper back to source if drop is rejected
 
     // Make tree nodes draggable:
     onDragStart?: (sourceNode: any) =>void; // Callback(sourceNode), return true, to enable dnd

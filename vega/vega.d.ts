@@ -1,17 +1,14 @@
 // Type definitions for Vega
 // Project: http://trifacta.github.io/vega/
 // Definitions by: Tom Crockett <http://github.com/pelotom>
-// Definitions: https://github.com/borisyankov/DefinitelyTyped
+// Definitions: https://github.com/DefinitelyTyped/DefinitelyTyped
 
-declare module Vega {
-  export interface VG {
-    parse: Parse;
-  }
+declare namespace Vega {
 
   export interface Parse {
     spec(url: string, callback: (chart: (args: ViewArgs) => View) => void): void;
     spec(spec: Spec, callback: (chart: (args: ViewArgs) => View) => void): void;
-    data(dataSet: Vega.Data[], callback: () => void): void;
+    data(dataSet: Data[], callback: () => void): void;
     // TODO all the other stuff
   }
 
@@ -39,14 +36,20 @@ declare module Vega {
 
     renderer(r: string): View;
 
-    data(): any;
-    data(d: any): View;
+    data(): Runtime.DataSets;
+    data(d: any/*TODO*/): View;
 
-    initialize(i: any): View;
+    initialize(selector: string): View;
+    initialize(node: Element): View;
 
     render(r?: any[]): View;
 
     update(options?: UpdateOptions): View;
+
+    model(): Vega.Model;
+
+    defs(): Defs;
+    defs(defs: Defs): View;
   }
 
   export interface Padding {
@@ -62,7 +65,111 @@ declare module Vega {
     props?: string;
     items?: any;
     duration?: number;
-    ease?: string; 
+    ease?: string;
+  }
+
+  export interface Bounds {
+    x1: number;
+    y1: number;
+    x2: number;
+    y2: number;
+    clear(): Bounds;
+    set(x1: number, y1: number, x2: number, y2: number): Bounds;
+    add(x: number, y: number): Bounds;
+    expand(d: number): Bounds;
+    round(): Bounds;
+    translate(dx: number, dy: number): Bounds;
+    rotate(angle: number, x: number, y: number): Bounds;
+    union(b: Bounds): Bounds;
+    encloses(b: Bounds): boolean;
+    intersects(b: Bounds): boolean;
+    contains(x: number, y: number): boolean;
+    width(): number;
+    height(): number;
+  }
+
+  export interface Model {
+    defs(): Defs;
+    defs(defs: Defs): Model;
+
+    data(): Runtime.DataSets;
+    data(data: Runtime.DataSets): Model;
+
+    ingest(name: string, tx: any/*TODO*/, input: any/*TODO*/): void;
+
+    dependencies(name: string, tx: any/*TODO*/): void;
+
+    width(w: number): Model;
+
+    height(h: number): Model;
+
+    scene(): Node;
+    scene(node: Node): Model;
+
+    build(): Model;
+
+    encode(trans?: any/*TODO*/, request?: string, item?: any): Model;
+
+    reset(): Model;
+  }
+
+  export namespace Runtime {
+    export interface DataSets {
+      [name: string]: Datum[];
+    }
+
+    export interface Datum {
+      [key: string]: any
+    }
+
+    export interface Marks {
+      type: string;
+      width: number;
+      height: number;
+      scales: Scale[];
+      axes: Axis[];
+      legends: Legend[];
+      marks: Mark[];
+    }
+
+    export interface PropertySets {
+      enter?: Properties;
+      exit?: Properties;
+      update?: Properties;
+      hover?: Properties;
+    }
+
+    export interface Properties {
+      (item: Node, group: Node, trans: any/*TODO*/): void;
+    }
+  }
+
+  export interface Node {
+    def: Vega.Mark;
+    marktype: string;
+    interactive: boolean;
+    items: Node[];
+    bounds: Bounds;
+
+    // mark item members
+    hasPropertySet(name: string): boolean;
+    cousin(offset: number, index: number): Node;
+    sibling(offset: number): Node;
+    remove(): Node;
+    touch(): void;
+
+    // group members
+    scales?: {[name: string]: any};
+    axisItems?: Node[];
+  }
+
+  export interface Defs {
+    width: number;
+    height: number;
+    viewport?: number[];
+    padding: any;
+    marks: Runtime.Marks;
+    data: Data[];
   }
 
   export interface Spec {
@@ -100,7 +207,9 @@ declare module Vega {
     * in some cases strict padding is not possible; for example, if the axis
     * labels are much larger than the data rectangle.
     */
-    padding?: any;
+    padding?: number | string | {
+        top: number; left: number; right: number; bottom: number
+    }; // string is "auto" or "strict"
     /**
     * Definitions of data to visualize.
     */
@@ -120,7 +229,7 @@ declare module Vega {
     /**
     * Graphical mark definitions.
     */
-    marks: Mark[];
+    marks: (Mark | GroupMark)[];
   }
 
   export interface Data {
@@ -158,16 +267,50 @@ declare module Vega {
     transform?: Data.Transform[];
   }
 
-  export module Data {
-    export interface Format {
+  export namespace Data {
+    export interface FormatBase {
       /**
       * The currently supported format types are json (JavaScript Object
       * Notation), csv (comma-separated values), tsv (tab-separated values),
       * topojson, and treejson.
       */
-      type?: string;
+      type: string;
       // TODO: fields for specific formats
     }
+
+    /**
+     * The JSON property containing the desired data.
+     * This parameter can be used when the loaded JSON file may have surrounding structure or meta-data.
+     * For example "property": "values.features" is equivalent to retrieving json.values.features from the
+     * loaded JSON object.
+     */
+    export interface JsonFormat extends FormatBase {
+      type: string; // "json"
+      property?: string;
+    }
+
+    export interface CsvOrTsvFormat extends FormatBase {
+      type: string; // "csv" | "tsv"
+      parse?: {
+       [propertyName: string]: string; // "number" | "boolean" | "date"
+      }
+    }
+
+    export interface TopoJsonFormat extends FormatBase {
+      type: string; // "topojson"
+      feature?: string;
+      mesh?: string;
+    }
+
+    export interface TreeJson extends FormatBase {
+      type: string; // "treejson"
+      children?: string;
+      parse?: {
+       [propertyName: string]: string; // "number" | "boolean" | "date"
+      }
+    }
+
+    export type Format = JsonFormat | CsvOrTsvFormat | TopoJsonFormat | TreeJson;
 
     export interface Transform {
       // TODO
@@ -196,7 +339,8 @@ declare module Vega {
 
     // -- Time/Quantitative scale properties
     clamp?: boolean;
-    nice?: any; // boolean for quantitative scales, string for time scales
+    /** boolean for quantitative scales, string for time scales */
+    nice?: boolean | string;
 
     // -- Quantitative scale properties
     exponent?: number;
@@ -225,14 +369,14 @@ declare module Vega {
     properties?: Axis.Properties
   }
 
-  export module Axis {
+  export namespace Axis {
     export interface Properties {
-      majorTicks?: Mark.PropertySet;
-      minorTicks?: Mark.PropertySet;
-      grid?: Mark.PropertySet;
-      labels?: Mark.PropertySet;
-      title?: Mark.PropertySet;
-      axis?: Mark.PropertySet;
+      ticks?: PropertySet;
+      minorTicks?: PropertySet;
+      grid?: PropertySet;
+      labels?: PropertySet;
+      title?: PropertySet;
+      axis?: PropertySet;
     }
   }
 
@@ -242,95 +386,158 @@ declare module Vega {
 
   export interface Mark {
     // TODO docs
-    type: string;
+    // Stuff from Spec.Mark
+    type: string; // "rect" | "symbol" | "path" | "arc" | "area" | "line" | "rule" | "image" | "text" | "group"
     name?: string;
     description?: string;
     from?: Mark.From;
-    properties?: Mark.PropertySets;
     key?: string;
-    delay?: Mark.ValueRef;
+    delay?: ValueRef;
+    /**
+    * "linear-in" | "linear-out" | "linear-in-out" | "linear-out-in" | "quad-in" | "quad-out" | "quad-in-out" |
+    * "quad-out-in" | "cubic-in" | "cubic-out" | "cubic-in-out" | "cubic-out-in" | "sin-in" | "sin-out" | "sin-in-out" |
+    * "sin-out-in" | "exp-in" | "exp-out" | "exp-in-out" | "exp-out-in" | "circle-in" | "circle-out" | "circle-in-out" |
+    * "circle-out-in" | "bounce-in" | "bounce-out" | "bounce-in-out" | "bounce-out-in"
+    */
+    ease?: string;
+
+    interactive?: boolean;
+
+    // Runtime PropertySets
+    properties?: PropertySets;
   }
 
   export module Mark {
     export interface From {
       // TODO docs
       data?: string;
+      mark?: string;
       transform?: Data.Transform[];
     }
+  }
 
-    export interface PropertySets {
-      // TODO docs
-      enter?: PropertySet;
-      exit?: PropertySet;
-      update?: PropertySet;
-      hover?: PropertySet;
-    }
+  export interface GroupMark extends Mark {
+    type: string; // "group"
+    /**
+     * Scale transform definitions.
+     */
+    scales?: Scale[];
+    /**
+     * Axis definitions.
+     */
+    axes?: Axis[];
+    /**
+     * Legend definitions.
+     */
+    legends?: Legend[];
+    /**
+     * Groups differ from other mark types in their ability to contain children marks.
+     * Marks defined within a group mark can inherit data from their parent group.
+     * For inheritance to work each data element for a group must contain data elements of its own.
+     * This arrangement of nested data is typically achieved by facetting the data, such that each group-level data element includes its own array of sub-elements
+     */
+    marks?: (Mark | GroupMark)[];
+  }
 
-    export interface PropertySet {
-      // TODO docs
+  export interface PropertySets {
+    // TODO docs
+    enter?: PropertySet;
+    exit?: PropertySet;
+    update?: PropertySet;
+    hover?: PropertySet;
+  }
 
-      // -- Shared visual properties
-      x?: ValueRef;
-      x2?: ValueRef;
-      width?: ValueRef;
-      y?: ValueRef;
-      y2?: ValueRef;
-      height?: ValueRef;
-      opacity?: ValueRef;
-      fill?: ValueRef;
-      fillOpacity?: ValueRef;
-      stroke?: ValueRef;
-      strokeWidth?: ValueRef;
-      strokeOpacity?: ValueRef;
-      strokeDash?: ValueRef;
-      strokeDashOffset?: ValueRef;
+  export interface PropertySet {
+    // TODO docs
 
-      // -- symbol
-      size?: ValueRef;
-      shape?: ValueRef;
+    // -- Shared visual properties
+    x?: ValueRef;
+    x2?: ValueRef;
+    width?: ValueRef;
+    y?: ValueRef;
+    y2?: ValueRef;
+    height?: ValueRef;
+    opacity?: ValueRef;
+    fill?: ValueRef;
+    fillOpacity?: ValueRef;
+    stroke?: ValueRef;
+    strokeWidth?: ValueRef;
+    strokeOpacity?: ValueRef;
+    strokeDash?: ValueRef;
+    strokeDashOffset?: ValueRef;
 
-      // -- path
-      path?: ValueRef;
+    // -- symbol
+    size?: ValueRef;
+    shape?: ValueRef;
 
-      // -- arc
-      innerRadius?: ValueRef;
-      outerRadius?: ValueRef;
-      startAngle?: ValueRef;
-      endAngle?: ValueRef;
+    // -- path
+    path?: ValueRef;
 
-      // -- area / line
-      interpolate?: ValueRef;
-      tension?: ValueRef;
+    // -- arc
+    innerRadius?: ValueRef;
+    outerRadius?: ValueRef;
+    startAngle?: ValueRef;
+    endAngle?: ValueRef;
 
-      // -- image / text
-      align?: ValueRef;
-      baseline?: ValueRef;
+    // -- area / line
+    interpolate?: ValueRef;
+    tension?: ValueRef;
 
-      // -- image
-      url?: ValueRef;
+    // -- image / text
+    align?: ValueRef;
+    baseline?: ValueRef;
 
-      // -- text
-      text?: ValueRef;
-      dx?: ValueRef;
-      dy?: ValueRef;
-      angle?: ValueRef;
-      font?: ValueRef;
-      fontSize?: ValueRef;
-      fontWeight?: ValueRef;
-      fontStyle?: ValueRef;
-    }
+    // -- image
+    url?: ValueRef;
 
-    export interface ValueRef {
-      // TODO docs
-      value?: any;
-      field?: any;
-      group?: any;
-      scale?: any;
-      mult?: number;
-      offset?: number;
-      band?: boolean;
-    }
+    // -- text
+    text?: ValueRef;
+    dx?: ValueRef;
+    dy?: ValueRef;
+    angle?: ValueRef;
+    font?: ValueRef;
+    fontSize?: ValueRef;
+    fontWeight?: ValueRef;
+    fontStyle?: ValueRef;
+  }
+
+  export interface ValueRef {
+    // TODO docs
+    value?: any;
+    field?: any;
+    group?: any;
+    scale?: any;
+    mult?: number;
+    offset?: number;
+    band?: boolean;
   }
 }
 
-declare var vg: Vega.VG;
+declare namespace vg {
+  export var parse: Vega.Parse;
+  export namespace scene {
+    export function item(mark: Vega.Node): Vega.Node;
+  }
+
+  export class Bounds implements Vega.Bounds {
+    x1: number;
+    y1: number;
+    x2: number;
+    y2: number;
+    clear(): Bounds;
+    set(x1: number, y1: number, x2: number, y2: number): Bounds;
+    add(x: number, y: number): Bounds;
+    expand(d: number): Bounds;
+    round(): Bounds;
+    translate(dx: number, dy: number): Bounds;
+    rotate(angle: number, x: number, y: number): Bounds;
+    union(b: Bounds): Bounds;
+    encloses(b: Bounds): boolean;
+    intersects(b: Bounds): boolean;
+    contains(x: number, y: number): boolean;
+    width(): number;
+    height(): number;
+  }
+
+  // TODO: classes for View, Model, etc.
+}

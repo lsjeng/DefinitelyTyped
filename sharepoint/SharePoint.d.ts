@@ -1,160 +1,18 @@
-// Type definitions for sptypescript
-// Project: http://sptypescript.codeplex.com
-// Definitions by: Stanislav Vyshchepan <http://gandjustas.blogspot.ru>, Andrey Markeev <http://markeev.com>
-// Definitions: https://github.com/borisyankov/DefinitelyTyped
+// Type definitions for SharePoint 2010 and 2013
+// Project: https://github.com/gandjustas/sptypescript
+// Definitions by: Stanislav Vyshchepan <http://blog.gandjustas.ru>, Andrey Markeev <http://markeev.com>
+// Definitions: https://github.com/DefinitelyTyped/DefinitelyTyped
 
+/// <reference path="../microsoft-ajax/microsoft.ajax.d.ts" />
+declare var _spBodyOnLoadFunctions: Function[];
+declare var _spBodyOnLoadFunctionNames: string[];
+declare var _spBodyOnLoadCalled: boolean;
+declare function ExecuteOrDelayUntilBodyLoaded(initFunc: () => void): void;
+declare function ExecuteOrDelayUntilScriptLoaded(func: () => void, depScriptFileName: string): boolean;
+declare function ExecuteOrDelayUntilEventNotified(func: Function, eventName: string): boolean;
+declare var Strings:any;
 
-
-declare module Sys {
-    export class EventArgs {
-        static Empty: Sys.EventArgs;
-    }
-    export class StringBuilder {
-        /** Appends a string to the string builder */
-        append(s: string): void;
-        /** Appends a line to the string builder */
-        appendLine(s: string): void;
-        /** Clears the contents of the string builder */
-        clear(): void;
-        /** Indicates wherever the string builder is empty */
-        isEmpty(): boolean;
-        /** Gets the contents of the string builder as a string */
-        toString(): string;
-    }
-    export class Component {
-        get_id(): string;
-        static create(type: Component, properties?: any, events?: any, references?: any, element?: Node);
-        initialize(): void;
-        updated(): void;
-    }
-
-    export interface IContainer {
-        addComponent(component: Component): void;
-        findComponent(id: string): Component;
-        getComponents(): Component[];
-        removeComponent(component: Component);
-    }
-
-    export class Application extends Component implements IContainer {
-        addComponent(component: Component): void;
-        findComponent(id: string): Component;
-        getComponents(): Component[];
-        removeComponent(component: Component);
-
-        static add_load(handler: (sender: Application, eventArgs: ApplicationLoadEventArgs) => void);
-        static remove_load(handler: (sender: Application, eventArgs: ApplicationLoadEventArgs) => void);
-    }
-
-    export class ApplicationLoadEventArgs {
-        constructor(components: Component[], isPartialLoad: boolean);
-        public components: Component[];
-        public isPartialLoad: boolean;
-    }
-
-    module UI {
-        export class Control extends Component { }
-        export class DomEvent {
-            static addHandler(element: HTMLElement, eventName: string, handler: (e: Event) => void);
-            static removeHandler(element: HTMLElement, eventName: string, handler: (e: Event) => void);
-        }
-
-        export class DomElement {
-            static getBounds(element: HTMLElement): { x: number; y: number; width: number; height: number; };
-        }
-    }
-    module Net {
-        export class WebRequest {
-            get_url(): string;
-            set_url(value: string): void;
-            get_httpVerb(): string;
-            set_httpVerb(value: string): void;
-            get_timeout(): number;
-            set_timeout(value: number): void;
-            get_body(): string;
-            set_body(value: string): void;
-            get_headers(): { [key: string]: string; };
-            get_userContext(): any;
-            set_userContext(value: any): void;
-            get_executor(): WebRequestExecutor;
-            set_executor(value: WebRequestExecutor): void;
-
-            getResolvedUrl(); string;
-            invoke(): void;
-            completed(args: Sys.EventArgs): void;
-
-            add_completed(handler: (executor: WebRequestExecutor, args: Sys.EventArgs) => void): void;
-            remove_completed(handler: (executor: WebRequestExecutor, args: Sys.EventArgs) => void): void;
-        }
-
-        export class WebRequestExecutor {
-            get_aborted(): boolean;
-            get_responseAvailable(): boolean;
-            get_responseData(): string;
-            get_object(): any;
-            get_started(): boolean;
-            get_statusCode(): number;
-            get_statusText(): string;
-            get_timedOut(): boolean;
-            get_xml(): Document;
-            get_webRequest(): WebRequest;
-            abort(): void;
-            executeRequest(): void;
-            getAllResponseHeaders(): string;
-            getResponseHeader(key: string): string;
-        }
-
-        export class NetworkRequestEventArgs extends EventArgs {
-            get_webRequest(): WebRequest;
-        }
-
-
-        export class WebRequestManager {
-            static get_defaultExecutorType(): string;
-            static set_defaultExecutorType(value: string): void;
-            static get_defaultTimeout(): number;
-            static set_defaultTimeout(value: number): void;
-
-            static executeRequest(request: WebRequest): void;
-            static add_completedRequest(handler: (executor: WebRequestExecutor, args: Sys.EventArgs) => void): void;
-            static remove_completedRequest(handler: (executor: WebRequestExecutor, args: Sys.EventArgs) => void): void;
-            static add_invokingRequest(handler: (executor: WebRequestExecutor, args: NetworkRequestEventArgs) => void): void;
-            static remove_invokingRequest(handler: (executor: WebRequestExecutor, args: NetworkRequestEventArgs) => void): void;
-        }
-
-        export class WebServiceProxy {
-            static invoke(
-                servicePath: string,
-                methodName: string,
-                useGet?: boolean,
-                params?: any,
-                onSuccess?: (result: string, eventArgs: EventArgs) => void,
-                onFailure?: (error: WebServiceError) => void,
-                userContext?: any,
-                timeout?: number,
-                enableJsonp?: boolean,
-                jsonpCallbackParameter?: string): WebRequest;
-        }
-
-        export class WebServiceError {
-            get_errorObject(): any;
-            get_exceptionType(): any;
-            get_message(): string;
-            get_stackTrace(): string;
-            get_statusCode(): number;
-            get_timedOut(): boolean;
-        }
-    }
-    interface IDisposable {
-        dispose(): void;
-    }
-
-}
-
-declare var $get: { (id: string): HTMLElement; };
-declare var $addHandler: { (element: HTMLElement, eventName: string, handler: (e: Event) => void): void; };
-declare var $removeHandler: { (element: HTMLElement, eventName: string, handler: (e: Event) => void): void; };
-
-declare module SP {
+declare namespace SP {
     export class SOD {
         static execute(fileName: string, functionName: string, ...args: any[]): void;
         static executeFunc(fileName: string, typeName: string, fn: () => void): void;
@@ -172,9 +30,108 @@ declare module SP {
 
         static get_ribbonImagePrefetchEnabled(): boolean;
         static set_ribbonImagePrefetchEnabled(value: boolean): void;
-
-
     }
+
+    export enum ListLevelPermissionMask {
+        viewListItems,//: 1,
+        insertListItems,//: 2,
+        editListItems,//: 4,
+        deleteListItems,//: 8,
+        approveItems,//: 16,
+        openItems,//: 32,
+        viewVersions,//: 64,
+        deleteVersions,//: 128,
+        breakCheckout,//: 256,
+        managePersonalViews,//: 512,
+        manageLists//: 2048
+    }
+
+    export class HtmlBuilder {
+        constructor();
+        addAttribute(name: string, value: string): void;
+        addCssClass(cssClassName: string): void;
+        addCommunitiesCssClass(cssClassName: string): void;
+        renderBeginTag(tagName: string): void;
+        renderEndTag(): void;
+        write(s: string): void;
+        writeEncoded(s: string): void;
+        toString(): string;
+    }
+
+    export class ScriptHelpers {
+        static disableWebpartSelection(context: SPClientTemplates.RenderContext): void;
+        static getDocumentQueryPairs(): { [index: string]: string; };
+        static getFieldFromSchema(schema: SPClientTemplates.ListSchema, fieldName: string): SPClientTemplates.FieldSchema;
+        static getLayoutsPageUrl(pageName: string, webServerRelativeUrl: string): string;
+        static getListLevelPermissionMask(jsonItem: string): number;
+        static getTextAreaElementValue(textAreaElement: HTMLTextAreaElement): string;
+        static getUrlQueryPairs(docUrl: string): { [index: string]: string; };
+        static getUserFieldProperty(item: ListItem, fieldName: string, propertyName: string): any;
+        static hasPermission(listPermissionMask: number, listPermission: ListLevelPermissionMask): boolean;
+        static newGuid(): SP.Guid;
+        static isNullOrEmptyString(str: string): boolean;
+        static isNullOrUndefined(obj: any): boolean;
+        static isNullOrUndefinedOrEmpty(str: string): boolean;
+        static isUndefined(obj: any): boolean;
+        static replaceOrAddQueryString(url: string, key: string, value: string): string;
+        static removeHtml(str: string): string;
+        static removeStyleChildren(element: HTMLElement): void;
+        static removeHtmlAndTrimStringWithEllipsis(str: string, maxLength: number): string;
+        static setTextAreaElementValue(textAreaElement: HTMLTextAreaElement, newValue: string): void;
+        static truncateToInt(n: number): number;
+        static urlCombine(path1: string, path2: string): string;
+        static resizeImageToSquareLength(imgElement: HTMLImageElement, squareLength: number): void;
+    }
+
+
+    export class PageContextInfo {
+        static get_siteServerRelativeUrl(): string;
+        static get_webServerRelativeUrl(): string;
+        static get_webAbsoluteUrl(): string;
+        static get_serverRequestPath(): string;
+        static get_siteAbsoluteUrl(): string;
+        static get_webTitle(): string;
+        static get_tenantAppVersion(): string;
+        static get_webLogoUrl(): string;
+        static get_webLanguage(): number;
+        static get_currentLanguage(): number;
+        static get_pageItemId(): number;
+        static get_pageListId(): string;
+        static get_webPermMasks(): { High: number; Low: number; };
+        static get_currentCultureName(): string;
+        static get_currentUICultureName(): string;
+        static get_clientServerTimeDelta(): number;
+        static get_userLoginName(): string;
+        static get_webTemplate(): string;
+        get_pagePersonalizationScope(): string;
+    }
+
+    export class ContextPermissions {
+        has(perm: number): boolean;
+        hasPermissions(high: number, low: number): boolean;
+        fromJson(json: { High: number; Low: number; }): void;
+    }
+
+    export module ListOperation {
+        export module ViewOperation {
+            export function getSelectedView(): string;
+            export function navigateUp(viewId: string): void;
+            export function refreshView(viewId: string): void;
+        }
+        export module Selection {
+            export function selectListItem(iid: string, bSelect: boolean): void;
+            export function getSelectedItems(): { id: number; fsObjType: FileSystemObjectType; }[];
+            export function getSelectedList(): string;
+            export function getSelectedView(): string;
+            export function navigateUp(viewId: string): void;
+            export function deselectAllListItems(iid: string): void;
+        }
+        export module Overrides {
+            export function overrideDeleteConfirmation(listId: string, overrideText: string): void;
+        }
+    }
+
+
 }
 
 /** Register function to rerun on partial update in MDS-enabled site.*/
@@ -205,6 +162,7 @@ declare class _spPageContextInfo {
     static currentUICultureName: string; //"ru-RU"
     static layoutsUrl: string;  //"_layouts/15"
     static pageListId: string;  //"{06ee6d96-f27f-4160-b6bb-c18f187b18a7}"
+    static pageItemId: number;
     static pagePersonalizationScope: string; //1
     static serverRequestPath: string; //"/SPTypeScript/Lists/ConditionalFormattingTasksList/AllItems.aspx"
     static siteAbsoluteUrl: string; // "https://gandjustas-7b20d3715e8ed4.sharepoint.com"
@@ -224,12 +182,151 @@ declare class _spPageContextInfo {
 }
 
 declare function STSHtmlEncode(value: string): string;
+declare function STSHtmlDecode(value: string): string;
 
 declare function AddEvtHandler(element: HTMLElement, event: string, func: EventListener): void;
 
 /** Gets query string parameter */
 declare function GetUrlKeyValue(key: string): string;
-declare module SP {
+
+declare class AjaxNavigate {
+    update(url: string, updateParts: Object, fullNavigate: boolean, anchorName: string): void;
+    add_navigate(handler: Function): void;
+    remove_navigate(handler: Function): void;
+    submit(formToSubmit: HTMLFormElement): void;
+    getParam(paramName: string): string;
+    getSavedFormAction(): string;
+    get_href(): string;
+    get_hash(): string;
+    get_search(): string;
+    convertMDSURLtoRegularURL(mdsPath: string): string;
+}
+
+declare var ajaxNavigate: AjaxNavigate;
+
+declare class Browseris {
+    firefox: boolean;
+    firefox36up: boolean;
+    firefox3up: boolean;
+    firefox4up: boolean;
+    ie: boolean;
+    ie55up: boolean;
+    ie5up: boolean;
+    ie7down: boolean;
+    ie8down: boolean;
+    ie9down: boolean;
+    ie8standard: boolean;
+    ie8standardUp: boolean;
+    ie9standardUp: boolean;
+    ipad: boolean;
+    windowsphone: boolean;
+    chrome: boolean;
+    chrome7up: boolean;
+    chrome8up: boolean;
+    chrome9up: boolean;
+    iever: boolean;
+    mac: boolean;
+    major: boolean;
+    msTouch: boolean;
+    isTouch: boolean;
+    nav: boolean;
+    nav6: boolean;
+    nav6up: boolean;
+    nav7up: boolean;
+    osver: boolean;
+    safari: boolean;
+    safari125up: boolean;
+    safari3up: boolean;
+    verIEFull: boolean;
+    w3c: boolean;
+    webKit: boolean;
+    win: boolean;
+    win8AppHost: boolean;
+    win32: boolean;
+    win64bit: boolean;
+    winnt: boolean;
+    armProcessor: boolean
+}
+
+declare var browseris: Browseris;
+
+interface ContextInfo extends SPClientTemplates.RenderContext {
+    AllowGridMode: boolean;
+    BasePermissions: any;
+    BaseViewID: any;
+    CascadeDeleteWarningMessage: string;
+    ContentTypesEnabled: boolean;
+    CurrentSelectedItems: boolean;
+    CurrentUserId: number;
+    EnableMinorVersions: boolean;
+    ExternalDataList: boolean;
+    HasRelatedCascadeLists: boolean;
+    HttpPath: string;
+    HttpRoot: string;
+    LastSelectableRowIdx: number;
+    LastSelectedItemIID: number;
+    LastRowIndexSelected: number;
+    RowFocusTimerID: number;
+    ListData: any;// SPClientTemplates.ListData_InView | SPClientTemplates.ListData_InForm
+    ListSchema: SPClientTemplates.ListSchema;
+    ModerationStatus: number;
+    PortalUrl: string;
+    RecycleBinEnabled: number;
+    SelectAllCbx: HTMLElement;
+    SendToLocationName: string;
+    SendToLocationUrl: string;
+    StateInitDone: boolean;
+    TableCbxFocusHandler: Function;
+    TableMouseoverHandler: Function;
+    TotalListItems: number;
+    WorkflowsAssociated: boolean;
+    clvp: any;
+    ctxId: number;
+    ctxType: any;
+    dictSel: any;
+    displayFormUrl: string;
+    editFormUrl: string;
+    imagesPath: string;
+    inGridMode: boolean;
+    inGridFullRender: boolean;
+    isForceCheckout: boolean;
+    isModerated: boolean;
+    isPortalTemplate: boolean;
+    isVersions: boolean;
+    isWebEditorPreview: boolean;
+    leavingGridMode: boolean;
+    loadingAsyncData: boolean;
+    listBaseType: number;
+    listName: string;
+    listTemplate: string;
+    listUrlDir: string;
+    newFormUrl: string;
+    onRefreshFailed: Function;
+    overrideDeleteConfirmation: string;
+    overrideFilterQstring: string;
+    recursiveView: boolean;
+    rootFolderForDisplay: string;
+    serverUrl: string;
+    verEnabled: boolean;
+    view: string;
+    queryString: string;
+    IsClientRendering: boolean;
+    wpq: string;
+    rootFolder: string;
+    IsAppWeb: boolean;
+    NewWOPIDocumentEnabled: boolean;
+    NewWOPIDocumentUrl: string;
+    AllowCreateFolder: boolean;
+    CanShareLinkForNewDocument: boolean;
+    noGroupCollapse: boolean;
+    SiteTemplateId: number;
+    ExcludeFromOfflineClient: boolean;
+
+}
+
+declare function GetCurrentCtx(): ContextInfo;
+declare function SetFullScreenMode(fullscreen: boolean): void;
+declare namespace SP {
     export enum RequestExecutorErrors {
         requestAbortedOrTimedout,
         unexpectedResponse,
@@ -255,7 +352,7 @@ declare module SP {
         method?: string;
         headers?: { [key: string]: string; };
         /** Can be string or bytearray depending on binaryStringRequestBody field */
-        body?: any;
+        body?: string | Uint8Array;
         binaryStringRequestBody?: boolean;
 
         /** Currently need fix to get ginary response. Details: http://techmikael.blogspot.ru/2013/07/how-to-copy-files-between-sites-using.html */
@@ -274,7 +371,7 @@ declare module SP {
         headers?: { [key: string]: string; };
         contentType?: string;
         /** Can be string or bytearray depending on request.binaryStringResponseBody field */
-        body?: any;
+        body?: string | Uint8Array;
         state?: any;
     }
 
@@ -557,8 +654,8 @@ declare class CalloutActionMenuEntry {
 
 
 declare class CalloutActionMenu {
-    constructor(actionsId);
-    addAction(action: CalloutAction);
+    constructor(actionsId: any);
+    addAction(action: CalloutAction): void;
     getActions(): CalloutAction[];
     render(): void;
     refreshActions(): void;
@@ -571,9 +668,9 @@ declare class CalloutAction {
     getText(): string;
     getToolTop(): string;
     getDisabledToolTip(): string;
-    getOnClickCallback(): (event, action: CalloutAction) => any;
-    getIsDisabledCallback(): (action: CalloutAction) => boolean;
-    getIsVisibleCallback(): (action: CalloutAction) => boolean;
+    getOnClickCallback(event: any, action: CalloutAction): any;
+    getIsDisabledCallback(action: CalloutAction): boolean;
+    getIsVisibleCallback(action: CalloutAction): boolean;
     getIsMenu(): boolean;
     getMenuEntries(): CalloutActionMenuEntry[];
     render(): void;
@@ -584,10 +681,10 @@ declare class CalloutAction {
 
 declare class Callout {
     /** Sets options for the callout. Not all options can be changed for the callout after its creation. */
-    set(options: CalloutOptions);
+    set(options: CalloutOptions): any;
     /** Adds event handler to the callout.
         @param eventName one of the following: "opened", "opening", "closing", "closed" */
-    addEventCallback(eventName: string, callback: (callout: Callout) => void);
+    addEventCallback(eventName: string, callback: (callout: Callout) => void): void;
     /** Returns the launch point element of the callout. */
     getLaunchPoint(): HTMLElement;
     /** Returns the ID of the callout. */
@@ -621,13 +718,13 @@ declare class Callout {
     /** Returns the callout actions menu */
     getActionMenu(): CalloutActionMenu;
     /** Adds a link to the actions panel in the bottom part of the callout window */
-    addAction(action: CalloutAction);
+    addAction(action: CalloutAction): void;
     /** Re-renders the actions menu. Call after the actions menu is changed. */
     refreshActions(): void;
     /** Display the callout. Animation can be used only for IE9+ */
-    open(useAnimation: boolean);
+    open(useAnimation: boolean): void;
     /** Hide the callout. Animation can be used only for IE9+ */
-    close(useAnimation: boolean);
+    close(useAnimation: boolean): void;
     /** Display if hidden, hide if shown. */
     toggle(): void;
     /** Do not call this directly. Instead, use CalloutManager.remove */
@@ -681,7 +778,7 @@ declare class CalloutManager {
     /** Checks if callout with specified ID already exists. If it doesn't, creates it, otherwise returns the existing one. */
     static createNewIfNecessary(options: CalloutOptions): Callout;
     /** Detaches callout from the launch point and destroys it. */
-    static remove(callout: Callout);
+    static remove(callout: Callout): void;
     /** Searches for a callout associated with the specified launch point. Throws error if not found. */
     static getFromLaunchPoint(launchPoint: HTMLElement): Callout;
     /** Searches for a callout associated with the specified launch point. Returns null if not found. */
@@ -692,7 +789,7 @@ declare class CalloutManager {
     /** Finds the closest launch point based on the specified descendant element, and returns callout associated with the launch point. */
     static getFromCalloutDescendant(descendant: HTMLElement): Callout;
     /** Perform some action for each callout on the page. */
-    static forEach(callback: (callout: Callout) => void);
+    static forEach(callback: (callout: Callout) => void): void;
     /** Closes all callouts on the page */
     static closeAll(): boolean;
     /** Returns true if at least one of the defined on page callouts is opened. */
@@ -702,7 +799,7 @@ declare class CalloutManager {
 }
 
 
-declare module SPClientTemplates {
+declare namespace SPClientTemplates {
 
     export enum FileSystemObjectType {
         Invalid,
@@ -867,17 +964,26 @@ declare module SPClientTemplates {
         PictureOnly: boolean;
         PictureSize: string;
     }
-    /** Represents field schema in Grid mode and on list forms.
-        Consider casting objects of this type to more specific field types, e.g. FieldSchemaInForm_Lookup */
-    export interface FieldSchema_InForm {
+
+    export interface FieldSchema {
         /** Specifies if the field can be edited while list view is in the Grid mode */
         AllowGridEditing: boolean;
+        /** String representation of the field type, e.g. "Lookup". Same as SPField.TypeAsString */
+        FieldType: string;
+        /** Internal name of the field */
+        Name: string;
+        /** For OOTB fields, returns the type of field. For "UserMulti" returns "User", for "LookupMulti" returns "Lookup".
+            For custom field types, returns base type of the field. */
+        Type: string;
+    }
+
+    /** Represents field schema in Grid mode and on list forms.
+            Consider casting objects of this type to more specific field types, e.g. FieldSchemaInForm_Lookup */
+    export interface FieldSchema_InForm extends FieldSchema {
         /** Description for this field. */
         Description: string;
         /** Direction of the reading order for the field. */
         Direction: string;
-        /** String representation of the field type, e.g. "Lookup". Same as SPField.TypeAsString */
-        FieldType: string;
         /** Indicates whether the field is hidden */
         Hidden: boolean;
         /** Guid of the field */
@@ -885,8 +991,6 @@ declare module SPClientTemplates {
         /** Specifies Input Method Editor (IME) mode bias to use for the field.
             The IME enables conversion of keystrokes between languages when one writing system has more characters than can be encoded for the given keyboard. */
         IMEMode: any;
-        /** Internal name of the field */
-        Name: string;
         /** Specifies if the field is read only */
         ReadOnlyField: boolean;
         /** Specifies wherever field requires values */
@@ -894,13 +998,16 @@ declare module SPClientTemplates {
         RestrictedMode: boolean;
         /** Title of the field */
         Title: string;
-        /** For OOTB fields, returns the type of field. For "UserMulti" returns "User", for "LookupMulti" returns "Lookup".
-            For custom field types, returns base type of the field. */
-        Type: string;
         /** If SPFarm.Local.UseMinWidthForHtmlPicker is true, UseMinWidth will be set to true. Undefined in other cases. */
         UseMinWidth: boolean;
     }
-    export interface ListSchema_InForm {
+
+    export interface ListSchema {
+        Field: FieldSchema[];
+    }
+
+
+    export interface ListSchema_InForm extends ListSchema {
         Field: FieldSchema_InForm[];
     }
     export interface ListData_InForm {
@@ -920,6 +1027,7 @@ declare module SPClientTemplates {
         FormUniqueId: string;
         ListData: ListData_InForm;
         ListSchema: ListSchema_InForm;
+        CSRCustomLayout?: boolean;
     }
 
 
@@ -945,9 +1053,7 @@ declare module SPClientTemplates {
         DefaultRender: string;
     }
     /** Represents field schema in a list view. */
-    export interface FieldSchema_InView {
-        /** Either "TRUE" or "FALSE" */
-        AllowGridEditing: string;
+    export interface FieldSchema_InView extends FieldSchema {
         /** Either "TRUE" or "FALSE" */
         CalloutMenu: string;
         ClassInfo: string; // e.g. "Menu"
@@ -957,8 +1063,6 @@ declare module SPClientTemplates {
         Explicit: string;
         fieldRenderer: any;
         FieldTitle: string;
-        /** Represents SPField.TypeAsString, e.g. "Computed", "UserMulti", etc. */
-        FieldType: string;
         /** Indicates whether the field can be filtered. Either "TRUE" or "FALSE" */
         Filterable: string;
         /** Set to "TRUE" for fields that comply to the following Xpath query:
@@ -971,16 +1075,14 @@ declare module SPClientTemplates {
         /** Specifies if the field contains list item menu.
             Corresponds to ViewFields/FieldRef/@ListItemMenu attribute. Either "TRUE" or "FALSE" and might be missing. */
         listItemMenu: string;
-        Name: string;
         RealFieldName: string;
         /** Either "TRUE" or "FALSE" */
         ReadOnly: string;
         ResultType: string;
         /** Indicates whether the field can be sorted. Either "TRUE" or "FALSE" */
         Sortable: string;
-        Type: string;
     }
-    export interface ListSchema_InView {
+    export interface ListSchema_InView extends ListSchema {
         /** Key-value object that represents all aggregations defined for the view.
             Key specifies the field internal name, and value specifies the type of the aggregation. */
         Aggregate: { [name: string]: string; };
@@ -992,7 +1094,6 @@ declare module SPClientTemplates {
         /** Either "0" or "1" */
         EffectivePresenceEnabled: string;
         /** If in grid mode (context.inGridMode == true), cast to FieldSchema_InForm[], otherwise cast to FieldSchema_InView[] */
-        Field: any[];
         FieldSortParam: string;
         Filter: any;
         /** Either "0" or "1" */
@@ -1150,7 +1251,7 @@ declare module SPClientTemplates {
         StateInitDone: boolean;
         TableCbxFocusHandler: any;
         TableMouseOverHandler: any;
-        TotalListItems: any;
+        TotalListItems: number;
         verEnabled: number;
         /** Guid of the view. */
         view: string;
@@ -1165,10 +1266,10 @@ declare module SPClientTemplates {
     }
     export interface RenderContext_FieldInView extends RenderContext_ItemInView {
         /** If in grid mode (context.inGridMode == true), cast to FieldSchema_InForm, otherwise cast to FieldSchema_InView */
-        CurrentFieldSchema: any;
+        CurrentFieldSchema: FieldSchema_InForm | FieldSchema_InView;
         CurrentFieldValue: any;
         FieldControlsModes: { [fieldInternalName: string]: ClientControlMode; };
-        FormContext: any;
+        FormContext: ClientFormContext;
         FormUniqueId: string;
     }
 
@@ -1178,28 +1279,29 @@ declare module SPClientTemplates {
     export interface Group {
         Items: Item[];
     }
+    type RenderCallback = (ctx: RenderContext) => void;
 
     export interface RenderContext {
-        BaseViewID: number;
-        ControlMode: ClientControlMode;
-        CurrentCultureName: string;
-        CurrentLanguage: number;
-        CurrentSelectedItems: any;
-        CurrentUICultureName: string;
-        ListTemplateType: number;
-        OnPostRender: any;
-        OnPreRender: any;
-        onRefreshFailed: any;
-        RenderBody: (renderContext: RenderContext) => string;
-        RenderFieldByName: (renderContext: RenderContext, fieldName: string) => string;
-        RenderFields: (renderContext: RenderContext) => string;
-        RenderFooter: (renderContext: RenderContext) => string;
-        RenderGroups: (renderContext: RenderContext) => string;
-        RenderHeader: (renderContext: RenderContext) => string;
-        RenderItems: (renderContext: RenderContext) => string;
-        RenderView: (renderContext: RenderContext) => string;
-        SiteClientTag: string;
-        Templates: TemplateOverrides;
+        BaseViewID?: number;
+        ControlMode?: ClientControlMode;
+        CurrentCultureName?: string;
+        CurrentLanguage?: number;
+        CurrentSelectedItems?: any;
+        CurrentUICultureName?: string;
+        ListTemplateType?: number;
+        OnPostRender?: RenderCallback | RenderCallback[];
+        OnPreRender?: RenderCallback | RenderCallback[];
+        onRefreshFailed?: any;
+        RenderBody?: (renderContext: RenderContext) => string;
+        RenderFieldByName?: (renderContext: RenderContext, fieldName: string) => string;
+        RenderFields?: (renderContext: RenderContext) => string;
+        RenderFooter?: (renderContext: RenderContext) => string;
+        RenderGroups?: (renderContext: RenderContext) => string;
+        RenderHeader?: (renderContext: RenderContext) => string;
+        RenderItems?: (renderContext: RenderContext) => string;
+        RenderView?: (renderContext: RenderContext) => string;
+        SiteClientTag?: string;
+        Templates?: Templates;
     }
 
     export interface SingleTemplateCallback {
@@ -1214,6 +1316,12 @@ declare module SPClientTemplates {
         /** Must return null in order to fall back to a more common template or to a system default template */
         (renderContext: RenderContext): string;
     }
+
+    export interface FieldCallback {
+        /** Must return null in order to fall back to a more common template or to a system default template */
+        (renderContext: RenderContext): string;
+    }
+
     export interface FieldInFormCallback {
         /** Must return null in order to fall back to a more common template or to a system default template */
         (renderContext: RenderContext_FieldInForm): string;
@@ -1234,23 +1342,44 @@ declare module SPClientTemplates {
         View?: FieldInViewCallback;
     }
 
+    export interface FieldTemplates {
+        [fieldInternalName: string]: FieldCallback;
+    }
+
+    export interface Templates {
+        View?: RenderCallback | string; // TODO: determine appropriate context type and purpose of this template
+        Body?: RenderCallback | string; // TODO: determine appropriate context type and purpose of this template
+        /** Defines templates for rendering groups (aggregations). */
+        Group?: GroupCallback | string;
+        /** Defines templates for list items rendering. */
+        Item?: ItemCallback | string;
+        /** Defines template for rendering list view header.
+            Can be either string or SingleTemplateCallback */
+        Header?: SingleTemplateCallback | string;
+        /** Defines template for rendering list view footer.
+            Can be either string or SingleTemplateCallback */
+        Footer?: SingleTemplateCallback | string;
+        /** Defines templates for fields rendering. The field is specified by it's internal name. */
+        Fields?: FieldTemplates;
+    }
+
     export interface FieldTemplateMap {
         [fieldInternalName: string]: FieldTemplateOverrides;
     }
 
     export interface TemplateOverrides {
-        View?: (renderContext: any) => string; // TODO: determine appropriate context type and purpose of this template
-        Body?: (renderContext: any) => string; // TODO: determine appropriate context type and purpose of this template 
+        View?: RenderCallback | string; // TODO: determine appropriate context type and purpose of this template
+        Body?: RenderCallback | string; // TODO: determine appropriate context type and purpose of this template
         /** Defines templates for rendering groups (aggregations). */
-        Group?: GroupCallback;
+        Group?: GroupCallback | string;
         /** Defines templates for list items rendering. */
-        Item?: ItemCallback;
+        Item?: ItemCallback | string;
         /** Defines template for rendering list view header.
             Can be either string or SingleTemplateCallback */
-        Header?: SingleTemplateCallback;
+        Header?: SingleTemplateCallback | string;
         /** Defines template for rendering list view footer.
             Can be either string or SingleTemplateCallback */
-        Footer?: SingleTemplateCallback;
+        Footer?: SingleTemplateCallback | string;
         /** Defines templates for fields rendering. The field is specified by it's internal name. */
         Fields?: FieldTemplateMap;
     }
@@ -1259,23 +1388,24 @@ declare module SPClientTemplates {
         Templates?: TemplateOverrides;
 
         /** �allbacks called before rendering starts. Can be function (ctx: RenderContext) => void or array of functions.*/
-        OnPreRender?: any;
+        OnPreRender?: RenderCallback | RenderCallback[];
 
         /** �allbacks called after rendered html inserted into DOM. Can be function (ctx: RenderContext) => void or array of functions.*/
-        OnPostRender?: any;
+        OnPostRender?: RenderCallback | RenderCallback[];
 
-        /** View style (SPView.StyleID) for which the templates should be applied. 
+        /** View style (SPView.StyleID) for which the templates should be applied.
             If not defined, the templates will be applied only to default view style. */
         ViewStyle?: number;
-        /** List template type (SPList.BaseTemplate) for which the template should be applied. 
+        /** List template type (SPList.BaseTemplate) for which the template should be applied.
             If not defined, the templates will be applied to all lists. */
         ListTemplateType?: number;
         /** Base view ID (SPView.BaseViewID) for which the template should be applied.
             If not defined, the templates will be applied to all views. */
-        BaseViewID?: any;
+        BaseViewID?: number | string;
     }
     export class TemplateManager {
         static RegisterTemplateOverrides(renderCtx: TemplateOverridesOptions): void;
+        static GetTemplates(renderCtx: RenderContext): Templates;
     }
 
     export interface ClientUserValue {
@@ -1321,6 +1451,10 @@ declare module SPClientTemplates {
         static BuildLookupValuesAsString(choiceArray: ClientLookupValue[], isMultiLookup: boolean, setGroupDesc: boolean): string;
         static ParseURLValue(value: string): ClientUrlValue;
         static GetFormContextForCurrentField(context: RenderContext_Form): ClientFormContext;
+        /** Returns ";#" */
+        static UserLookupDelimitString: string;
+        /** Returns ";#" */
+        static UserMultiValueDelimitString:string;
     }
 
     export class ClientFormContext {
@@ -1355,7 +1489,7 @@ declare module SPClientTemplates {
         registerGetValueCallback(fieldname: string, callback: () => any): void;
         updateControlValue(fieldname: string, value: any): void;
         registerClientValidator(fieldname: string, validator: SPClientForms.ClientValidation.ValidatorSet): void;
-        registerHasValueChangedCallback(fieldname: string, callback: (eventArg?: any) => void);
+        registerHasValueChangedCallback(fieldname: string, callback: (eventArg?: any) => void): void;
     }
 
 }
@@ -1366,14 +1500,14 @@ declare function GenerateIIDForListItem(renderCtx: SPClientTemplates.RenderConte
 declare function SPFormControl_AppendValidationErrorMessage(nodeId: string, errorResult: any): void;
 declare function CoreRender(template: any, context: any): string;
 
-declare module SPClientForms {
-    module ClientValidation {
+declare namespace SPClientForms {
+    namespace ClientValidation {
         export class ValidationResult {
             constructor(hasErrors: boolean, errorMsg: string);
         }
 
         export class ValidatorSet {
-            public RegisterValidator(validator: IValidator);
+            public RegisterValidator(validator: IValidator): void;
         }
 
         export interface IValidator {
@@ -1383,11 +1517,82 @@ declare module SPClientForms {
         export class RequiredValidator implements IValidator {
             Validate(value: any): ValidationResult;
         }
+
+        export class RequiredFileValidator implements IValidator {
+            Validate(value: any): ValidationResult;
+        }
+
+        export class RequiredRichTextValidator implements IValidator {
+            Validate(value: any): ValidationResult;
+        }
+
+        export class MaxLengthUrlValidator implements IValidator {
+            Validate(value: any): ValidationResult;
+        }
+
+
+    }
+
+    export enum FormManagerEvents {
+        Event_OnControlValueChanged,//: 1,
+        Event_OnControlInitializedCallback,//: 2,
+        Event_OnControlFocusSetCallback,//: 3,
+        Event_GetControlValueCallback,//: 4,
+        Event_OnControlValidationError,//: 5,
+        Event_RegisterControlValidator,//: 6,
+        Event_GetHasValueChangedCallback//: 7
+    }
+
+    export class ClientForm {
+        constructor(qualifier: string);
+        RenderClientForm(): void;
+        SubmitClientForm(): boolean;
+        NotifyControlEvent(eventName: FormManagerEvents, fldName: string, eventArg: any): void;
+    }
+
+    export class ClientFormManager {
+        static GetClientForm(qualifier: string): ClientForm;
+        static RegisterClientForm(qualifier: string): void;
+        static SubmitClientForm(qualifier: string): boolean;
     }
 }
 
+declare class SPMgr {
+    NewGroup(listItem: Object, fieldName: string): boolean;
+    RenderHeader(renderCtx: SPClientTemplates.RenderContext, field: SPClientTemplates.FieldSchema): string;
+    RenderField(renderCtx: SPClientTemplates.RenderContext, field: SPClientTemplates.FieldSchema, listItem: Object, listSchema: SPClientTemplates.ListSchema): string;
+    RenderFieldByName(renderCtx: SPClientTemplates.RenderContext, fieldName: string, listItem: Object, listSchema: SPClientTemplates.ListSchema): string;
+}
 
-declare module SPAnimation {
+declare var spMgr: SPMgr;
+
+declare function SPField_FormDisplay_Default(ctx: SPClientTemplates.RenderContext_FieldInForm): string;
+declare function SPField_FormDisplay_DefaultNoEncode(ctx: SPClientTemplates.RenderContext_FieldInForm): string;
+declare function SPField_FormDisplay_Empty(ctx: SPClientTemplates.RenderContext_FieldInForm): string;
+declare function SPFieldText_Edit(ctx: SPClientTemplates.RenderContext_FieldInForm): string;
+declare function SPFieldNumber_Edit(ctx: SPClientTemplates.RenderContext_FieldInForm): string;
+declare function SPFieldBoolean_Edit(ctx: SPClientTemplates.RenderContext_FieldInForm): string;
+declare function SPFieldNote_Display(ctx: SPClientTemplates.RenderContext_FieldInForm): string;
+declare function SPFieldNote_Edit(ctx: SPClientTemplates.RenderContext_FieldInForm): string;
+declare function SPFieldFile_Display(ctx: SPClientTemplates.RenderContext_FieldInForm): string;
+declare function SPFieldFile_Edit(ctx: SPClientTemplates.RenderContext_FieldInForm): string;
+declare function SPFieldChoice_Edit(ctx: SPClientTemplates.RenderContext_FieldInForm): string;
+declare function SPFieldChoice_Dropdown_Edit(ctx: SPClientTemplates.RenderContext_FieldInForm): string;
+declare function SPFieldChoice_Radio_Edit(ctx: SPClientTemplates.RenderContext_FieldInForm): string;
+declare function SPFieldMultiChoice_Edit(ctx: SPClientTemplates.RenderContext_FieldInForm): string;
+declare function SPFieldDateTime_Display(ctx: SPClientTemplates.RenderContext_FieldInForm): string;
+declare function SPFieldDateTime_Edit(ctx: SPClientTemplates.RenderContext_FieldInForm): string;
+declare function SPFieldUrl_Display(ctx: SPClientTemplates.RenderContext_FieldInForm): string;
+declare function SPFieldUrl_Edit(ctx: SPClientTemplates.RenderContext_FieldInForm): string;
+declare function SPFieldUser_Display(ctx: SPClientTemplates.RenderContext_FieldInForm): string;
+declare function SPFieldUserMulti_Display(ctx: SPClientTemplates.RenderContext_FieldInForm): string;
+declare function SPClientPeoplePickerCSRTemplate(ctx: SPClientTemplates.RenderContext_FieldInForm): string;
+declare function SPFieldLookup_Display(ctx: SPClientTemplates.RenderContext_FieldInForm): string;
+declare function SPFieldLookup_Edit(ctx: SPClientTemplates.RenderContext_FieldInForm): string;
+declare function SPFieldLookupMulti_Edit(ctx: SPClientTemplates.RenderContext_FieldInForm): string;
+declare function SPFieldAttachments_Default(ctx: SPClientTemplates.RenderContext_FieldInForm): string;
+
+declare namespace SPAnimation {
     export enum Attribute {
         PositionX,
         PositionY,
@@ -1429,7 +1634,7 @@ declare module SPAnimation {
 
 
     export class State {
-        SetAttribute(attributeId: Attribute, value: number);
+        SetAttribute(attributeId: Attribute, value: number): void;
         GetAttribute(attributeId: Attribute): number;
         GetDataIndex(attributeId: Attribute): number
     }
@@ -1441,7 +1646,7 @@ declare module SPAnimation {
     }
 }
 
-declare module SPAnimationUtility {
+declare namespace SPAnimationUtility {
     export class BasicAnimator {
         static FadeIn(element: HTMLElement, finishFunc?: (data: any) => void, data?: any): void;
         static FadeOut(element: HTMLElement, finishFunc?: (data: any) => void, data?: any): void;
@@ -1474,7 +1679,7 @@ interface IEnumerable<T> {
     getEnumerator(): IEnumerator<T>;
 }
 
-declare module SP {
+declare namespace SP {
     export class ScriptUtility {
         static isNullOrEmptyString(str: string): boolean;
         static isNullOrUndefined(obj: any): boolean;
@@ -2306,7 +2511,7 @@ declare module SP {
         get_webId(): SP.Guid;
         getErrorDetails(): SP.ClientObjectList<SP.AppInstanceErrorDetails>;
         uninstall(): SP.GuidResult;
-        upgrade(appPackageStream: any[]): void;
+        upgrade(appPackageStream: SP.Base64EncodedByteArray): void;
         cancelAllJobs(): SP.BooleanResult;
         install(): SP.GuidResult;
         getPreviousAppVersion(): SP.App;
@@ -2381,8 +2586,8 @@ declare module SP {
         getByFileName(fileName: string): SP.Attachment;
     }
     export class AttachmentCreationInformation extends SP.ClientValueObject {
-        get_contentStream(): any[];
-        set_contentStream(value: any[]): void;
+        get_contentStream(): SP.Base64EncodedByteArray;
+        set_contentStream(value: SP.Base64EncodedByteArray): void;
         get_fileName(): string;
         set_fileName(value: string): void;
         get_typeId(): string;
@@ -2435,12 +2640,12 @@ declare module SP {
     /** Specifies a Collaborative Application Markup Language (CAML) query on a list. */
     export class CamlQuery extends SP.ClientValueObject {
         constructor();
-        /** This method creates a Collaborative Application Markup Language (CAML) string 
-            that can be used to recursively get all of the items in a list, including 
+        /** This method creates a Collaborative Application Markup Language (CAML) string
+            that can be used to recursively get all of the items in a list, including
             the items in the subfolders. */
         static createAllItemsQuery(): SP.CamlQuery;
-        /** This method creates a Collaborative Application Markup Language (CAML) string 
-            that can be used to recursively get all of the folders in a list, including 
+        /** This method creates a Collaborative Application Markup Language (CAML) string
+            that can be used to recursively get all of the folders in a list, including
             the subfolders. */
         static createAllFoldersQuery(): SP.CamlQuery;
         /** Returns true if the query returns dates in Coordinated Universal Time (UTC) format. */
@@ -2670,8 +2875,8 @@ declare module SP {
         get_hidden(): boolean;
         set_hidden(value: boolean): void;
         get_id(): SP.ContentTypeId;
-        get_jSLink(): string;
-        set_jSLink(value: string): void;
+        get_jsLink(): string;
+        set_jsLink(value: string): void;
         get_name(): string;
         set_name(value: string): void;
         get_newFormTemplateName(): string;
@@ -2895,8 +3100,8 @@ declare module SP {
         get_indexed(): boolean;
         set_indexed(value: boolean): void;
         get_internalName(): string;
-        get_jSLink(): string;
-        set_jSLink(value: string): void;
+        get_jsLink(): string;
+        set_jsLink(value: string): void;
         get_readOnlyField(): boolean;
         set_readOnlyField(value: boolean): void;
         get_required(): boolean;
@@ -3109,7 +3314,7 @@ declare module SP {
         boolean,
         number,
         currency,
-        uRL,
+        URL,
         computed,
         threading,
         guid,
@@ -4306,7 +4511,7 @@ declare module SP {
         get_id(): number;
         get_information(): SP.TimeZoneInformation;
         localTimeToUTC(date: Date): SP.DateTimeResult;
-        uTCToLocalTime(date: Date): SP.DateTimeResult;
+        utcToLocalTime(date: Date): SP.DateTimeResult;
     }
     export class TimeZoneCollection extends SP.ClientObjectCollection<TimeZone> {
         itemAt(index: number): SP.TimeZone;
@@ -4487,8 +4692,8 @@ declare module SP {
         set_includeRootFolder(value: boolean): void;
         get_viewJoins(): string;
         set_viewJoins(value: string): void;
-        get_jSLink(): string;
-        set_jSLink(value: string): void;
+        get_jsLink(): string;
+        set_jsLink(value: string): void;
         get_listViewXml(): string;
         set_listViewXml(value: string): void;
         get_method(): string;
@@ -4678,11 +4883,14 @@ declare module SP {
         getSubwebsForCurrentUser(query: SP.SubwebQuery): SP.WebCollection;
         getAppInstanceById(appInstanceId: SP.Guid): SP.AppInstance;
         getAppInstancesByProductId(productId: SP.Guid): SP.ClientObjectList<SP.AppInstance>;
-        loadAndInstallAppInSpecifiedLocale(appPackageStream: any[], installationLocaleLCID: number): SP.AppInstance;
-        loadApp(appPackageStream: any[], installationLocaleLCID: number): SP.AppInstance;
-        loadAndInstallApp(appPackageStream: any[]): SP.AppInstance;
+        loadAndInstallAppInSpecifiedLocale(appPackageStream: SP.Base64EncodedByteArray, installationLocaleLCID: number): SP.AppInstance;
+        loadApp(appPackageStream: SP.Base64EncodedByteArray, installationLocaleLCID: number): SP.AppInstance;
+        loadAndInstallApp(appPackageStream: SP.Base64EncodedByteArray): SP.AppInstance;
         ensureUser(logonName: string): SP.User;
         applyTheme(colorPaletteUrl: string, fontSchemeUrl: string, backgroundImageUrl: string, shareGenerated: boolean): void;
+
+        /** Available after March 2015 CU for SharePoint 2013*/
+        getList(url: string): List;
     }
     export class WebCollection extends SP.ClientObjectCollection<Web> {
         itemAt(index: number): SP.Web;
@@ -4915,8 +5123,8 @@ declare module SP {
 
 
 
-declare module Microsoft.SharePoint.Client.Search {
-    module Query {
+declare namespace Microsoft.SharePoint.Client.Search {
+    namespace Query {
 
         /**Contains information common to all types of search queries.*/
         export class Query extends SP.ClientObject {
@@ -4971,7 +5179,7 @@ declare module Microsoft.SharePoint.Client.Search {
             set_maxSnippetLength: (value: number) => void;
 
             get_personalizationData: () => QueryPersonalizationData;
-            set_personalizationData: (QueryPersonalizationData) => void;
+            set_personalizationData: (value: QueryPersonalizationData) => void;
 
             get_processBestBets: () => boolean;
             set_processBestBets: (value: boolean) => void;
@@ -5015,7 +5223,7 @@ declare module Microsoft.SharePoint.Client.Search {
             set_startRow: (value: number) => void;
 
             get_summaryLength: () => number;
-            set_summaryLength: (number) => void;
+            set_summaryLength: (value: number) => void;
 
             get_timeout: () => number;
             set_timeout: (value: number) => void;
@@ -5033,11 +5241,11 @@ declare module Microsoft.SharePoint.Client.Search {
 
 
             getQuerySuggestionsWithResults: (iNumberOfQuerySuggestions: number,
-            iNumberOfResultSuggestions: number,
-            fPreQuerySuggestions: boolean,
-            fHitHighlighting: boolean,
-            fCapitalizeFirstLetters: boolean,
-            fPrefixMatchAllTerms: boolean) => QuerySuggestionResults;
+                iNumberOfResultSuggestions: number,
+                fPreQuerySuggestions: boolean,
+                fHitHighlighting: boolean,
+                fCapitalizeFirstLetters: boolean,
+                fPrefixMatchAllTerms: boolean) => QuerySuggestionResults;
 
 
         }
@@ -5083,15 +5291,15 @@ declare module Microsoft.SharePoint.Client.Search {
             executeQuery: (query: Query) => SP.JsonObjectResult;
             executeQueries: (queryIds: string[], queries: Query[], handleExceptions: boolean) => SP.JsonObjectResult;
             recordPageClick: (
-            pageInfo: string,
-            clickType: string,
-            blockType: number,
-            clickedResultId: string,
-            subResultIndex: number,
-            immediacySourceId: string,
-            immediacyQueryString: string,
-            immediacyTitle: string,
-            immediacyUrl: string) => void;
+                pageInfo: string,
+                clickType: string,
+                blockType: number,
+                clickedResultId: string,
+                subResultIndex: number,
+                immediacySourceId: string,
+                immediacyQueryString: string,
+                immediacyTitle: string,
+                immediacyUrl: string) => void;
             exportPopularQueries: (web: SP.Web, sourceId: SP.Guid) => SP.JsonObjectResult;
         }
 
@@ -5212,7 +5420,7 @@ declare module Microsoft.SharePoint.Client.Search {
             itemAt: (index: number) => Sort;
             get_item: (index: number) => Sort;
             get_childItemType: () => Object;
-            add: (property: Sort) => void;
+            add: (strProperty: string, sortDirection: SortDirection) => void;
             clear: () => void;
         }
 
@@ -5359,7 +5567,7 @@ declare module Microsoft.SharePoint.Client.Search {
         }
     }
 
-    module WebControls {
+    namespace WebControls {
         export class ControlMessage extends SP.ClientValueObject {
             get_code: () => number;
 
@@ -5393,18 +5601,18 @@ declare module Microsoft.SharePoint.Client.Search {
         }
     }
 
-    module Administration {
+    namespace Administration {
         export class DocumentCrawlLog extends SP.ClientObject {
             constructor(context: SP.ClientContext, site: SP.Site);
             getCrawledUrls: (getCountOnly: boolean,
-            maxRows: { High: number; Low: number; },
-            queryString: string,
-            isLike: boolean,
-            contentSourceID: number,
-            errorLevel: number,
-            errorID: number,
-            startDateTime: Date,
-            endDateTime: Date) => SP.JsonObjectResult;
+                maxRows: { High: number; Low: number; },
+                queryString: string,
+                isLike: boolean,
+                contentSourceID: number,
+                errorLevel: number,
+                errorID: number,
+                startDateTime: Date,
+                endDateTime: Date) => SP.JsonObjectResult;
         }
 
         export class SearchObjectOwner extends SP.ClientObject {
@@ -5419,7 +5627,7 @@ declare module Microsoft.SharePoint.Client.Search {
         }
     }
 
-    module Portability {
+    namespace Portability {
         export class SearchConfigurationPortability extends SP.ClientObject {
             constructor(context: SP.ClientContext);
             get_importWarnings: () => string;
@@ -5437,7 +5645,7 @@ declare module Microsoft.SharePoint.Client.Search {
     }
 
     /**Located in sp.search.apps.js*/
-    module Analytics {
+    namespace Analytics {
         export class AnalyticsItemData extends SP.ClientObject {
             get_lastProcessingTime: () => Date;
 
@@ -5469,7 +5677,7 @@ declare module Microsoft.SharePoint.Client.Search {
     }
 }
 
-declare module SP {
+declare namespace SP {
     export module BusinessData {
         export class AppBdcCatalog extends SP.ClientObject {
             getEntity(namespace: string, name: string): SP.BusinessData.Entity;
@@ -5658,7 +5866,7 @@ declare module SP {
     }
 }
 
-declare module SP {
+declare namespace SP {
     export module Sharing {
         export class DocumentSharingManager {
             static getRoleDefinition(context: SP.ClientRuntimeContext, role: SP.Sharing.Role): SP.RoleDefinition;
@@ -5695,7 +5903,7 @@ declare module SP {
 
 }
 
-declare module SP {
+declare namespace SP {
 
     export module Social {
         /** Identifies an actor as a user, document, site, or tag. */
@@ -5852,7 +6060,7 @@ declare module SP {
 
         /** Contains information about an actor retrieved from server. An actor is a user, document, site, or tag. */
         export class SocialActor extends SP.ClientValueObject {
-            /** The AccountName property returns the user account name. 
+            /** The AccountName property returns the user account name.
                 This property is only available for social actors of type "user". */
             get_accountName(): string;
             /** Identifies whether the actor is a user, document, site, or tag. */
@@ -5883,7 +6091,7 @@ declare module SP {
             get_personalSiteUri(): string;
             /** Represents the status of retrieving the actor */
             get_status(): SocialStatusCode;
-            /** The StatusText property returns the most recent post of the user. 
+            /** The StatusText property returns the most recent post of the user.
                 This property is only available for social actors of type "user". */
             get_statusText(): string;
             /** Returns the GUID of the tag.
@@ -5898,10 +6106,10 @@ declare module SP {
 
         /** Identifies an actor to the server. An actor can be a user, document, site, or tag. */
         export class SocialActorInfo extends SP.ClientValueObject {
-            /** User account name. 
+            /** User account name.
                 This property is only available for social actors of type "user". */
             get_accountName(): string;
-            /** User account name. 
+            /** User account name.
                 This property is only available for social actors of type "user". */
             set_accountName(value: string): string;
             /** Identifies whether the actor is a user, document, site, or tag. */
@@ -6012,7 +6220,7 @@ declare module SP {
         }
 
         /** Provides information about an overlay.
-            An overlay is a substring in a post that represents a user, document, site, tag, or link. 
+            An overlay is a substring in a post that represents a user, document, site, tag, or link.
             The SocialPost class contains an array of SocialDataOverlay objects.
             Each of the SocialDataOverlay objects specifies a link or one or more actors. */
         export class SocialDataOverlay extends SP.ClientValueObject {
@@ -6049,8 +6257,8 @@ declare module SP {
                 The most recent post that was requested can be removed from the feed if the current user does not have access to it.
                 Consequently, the feed does not always contain the post with the date specified in this property. */
             get_newestProcessed(): string;
-            /** The OldestProcessed property returns the date-time of the oldest post that was requested. 
-                The oldest post that was requested can be removed from the feed if the current user does not have access to it. 
+            /** The OldestProcessed property returns the date-time of the oldest post that was requested.
+                The oldest post that was requested can be removed from the feed if the current user does not have access to it.
                 Consequently, the feed does not always contain the post with the date specified in this property */
             get_oldestProcessed(): string;
             /** Contains the social threads in the feed. */
@@ -6062,12 +6270,12 @@ declare module SP {
         /** Provides access to social feeds.
             It provides methods to create posts, delete posts, read posts, and perform other operations on posts. */
         export class SocialFeedManager extends SP.ClientObject {
-            constructor();
+            constructor(context: SP.ClientRuntimeContext);
             /** Returns the current user */
             get_owner(): SocialActor;
             /** Specifies the URI of the personal site portal. */
             get_personalSitePortalUri(): string;
-            /** Creates a post in the current user's newsfeed, in the specified user's feed, or in the specified thread. 
+            /** Creates a post in the current user's newsfeed, in the specified user's feed, or in the specified thread.
                 This method returns a new or a modified thread.
                 @param targetId Optional, specifies the target of the post.
                                 If this parameter is null, the post is created as a root post in the current user's feed.
@@ -6100,19 +6308,19 @@ declare module SP {
             getFullThread(threadId: string): SocialThread;
             /** Returns a feed containing mention reference threads from the current user's personal feed. */
             getMentions(clearUnreadMentions: boolean, options: SocialFeedOptions): SocialFeed;
-            /** Returns the server's count of unread mentions of the current user. 
-                The server maintains a count of unread mentions in posts, but does not track which mentions have been read. 
-                When a new mention is stored on the server, it increments the unread mention for the user specified by the mention. 
+            /** Returns the server's count of unread mentions of the current user.
+                The server maintains a count of unread mentions in posts, but does not track which mentions have been read.
+                When a new mention is stored on the server, it increments the unread mention for the user specified by the mention.
                 The unread mention count is cleared by the GetMentions method. */
             getUnreadMentionCount(): SP.IntResult;
-            /** Specifies that the current user likes the specified post. 
-                Returns a digest thread containing the specified post. 
+            /** Specifies that the current user likes the specified post.
+                Returns a digest thread containing the specified post.
                 A digest thread contains the root post and a selection of reply posts */
             likePost(postId: string): SocialThread;
-            /** Specifies that the current user does not like the specified post. 
+            /** Specifies that the current user does not like the specified post.
                 Returns a digest thread containing the specified post.  */
             unlikePost(postId: string): SocialThread;
-            /** Prevents any user from adding a new reply post to the specified thread. 
+            /** Prevents any user from adding a new reply post to the specified thread.
                 Once a thread is locked, no new reply posts can be added until after the thread has been unlocked with the unlockThread method.
                 This method returns a digest of the locked thread */
             lockThread(threadId: string): SocialThread;
@@ -6152,9 +6360,9 @@ declare module SP {
             get_followedSitesUri(): string;
             /** Adds the specified actor to the current user's list of followed items.
                 Returns one of the following values, wrapped into the SP.IntResult object:
-                0 = ok, 
-                1 = alreadyFollowing, 
-                2 = limitReached, 
+                0 = ok,
+                1 = alreadyFollowing,
+                2 = limitReached,
                 3 = internalError */
             follow(actor: SocialActorInfo): SP.IntResult;
             stopFollowing(actor: SocialActorInfo): SP.BooleanResult;
@@ -6287,10 +6495,10 @@ declare module SP {
             get_text(): string;
             /** Specifies the text that is substituted for the placeholder */
             set_text(value: string): string;
-            /** Specifies the URI of the document, site, or link. 
+            /** Specifies the URI of the document, site, or link.
                 This property is only available if the ItemType property specifies that the item is a Document, Link, or Site. */
             get_uri(): string;
-            /** Specifies the URI of the document, site, or link. 
+            /** Specifies the URI of the document, site, or link.
                 This property is only available if the ItemType property specifies that the item is a Document, Link, or Site. */
             set_uri(value: string): string;
         }
@@ -6338,8 +6546,8 @@ declare module SP {
     }
 
 }
-declare module SP {
-    module Taxonomy {
+declare namespace SP {
+    namespace Taxonomy {
         export enum StringMatchOption {
             startsWith,
             exactMatch
@@ -6372,7 +6580,6 @@ declare module SP {
             static getTaxonomySession(context: SP.ClientContext): TaxonomySession;
             get_offlineTermStoreNames(): string[];
             get_termStores(): TermStoreCollection;
-            getTerms(termLabel: string, trimUnavailable: boolean): TermCollection;
             getTerms(labelMatchInformation: LabelMatchInformation): TermCollection;
             updateCache(): void;
             getTerm(guid: SP.Guid): Term;
@@ -6547,7 +6754,7 @@ declare module SP {
             get_isReused(): boolean;
             get_isRoot(): boolean;
             get_isSourceTerm(): boolean;
-            get_labels: LabelCollection;
+            get_labels(): LabelCollection;
             get_localCustomProperties(): { [key: string]: string; };
             get_mergedTermIds(): SP.Guid[];
             get_parent(): Term;
@@ -6749,7 +6956,7 @@ declare module SP {
     }
 }
 
-declare module SP {
+declare namespace SP {
     export module DocumentSet {
         export class DocumentSet extends ClientObject {
             static create(context: ClientContext, parentFolder: Folder, name: string, ctid: ContentTypeId): StringResult;
@@ -6796,7 +7003,7 @@ declare module SP {
 }
 
 
-declare module SP {
+declare namespace SP {
     export module UI {
         export module ApplicationPages {
             export class SelectorSelectionEventArgs extends Sys.EventArgs {
@@ -6930,7 +7137,7 @@ declare module SP {
     }
 }
 
-declare module SP {
+declare namespace SP {
     export module UI {
         export class PopoutMenu implements Sys.IDisposable {
             constructor(launcherId: string, menuId: string, iconId: string, launcherOpenCssClass: string, textDirection: string, closeIconUrl: string, isClustered: boolean, closeIconOffsetLeft: number, closeIconOffsetTop: number, closeIconHeight: number, closeIconWidth: number);
@@ -6952,41 +7159,29 @@ declare module SP {
             get_textElement(): HTMLElement;
             constructor();
         }
-        export class Notify {
-            static addNotification(strHtml: string, bSticky: boolean): string;
-            static removeNotification(nid: string): void;
-            constructor();
+
+        export module Notify {
+            export function addNotification(strHtml: string, bSticky: boolean): string;
+            export function removeNotification(nid: string): void;
+            export function showLoadingNotification(bSticky: boolean): string;
+
+
+            export class Notification {
+                constructor(containerId: SPNotifications.ContainerID, strHtml: string, bSticky?: boolean, strTooltip?: string, onclickHandler?: () => void, extraData?: SPStatusNotificationData);
+                get_id(): string;
+                Show(bNoAnimate: boolean): void;
+                Hide(bNoAnimate: boolean): void;
+            }
+            export class NotificationContainer {
+                constructor(id: number, element: any, layer: number, notificationLimit?: number);
+                Clear(): void;
+                GetCount(): number;
+                SetEventHandler(eventId: SPNotifications.EventID, eventHandler: any): void;
+            }
         }
-        export enum ContainerID {
-            Basic,
-            Status,
-        }
-        export enum EventID {
-            OnShow,
-            OnHide,
-            OnDisplayNotification,
-            OnRemoveNotification,
-            OnNotificationCountChanged,
-        }
-        export class SPNotification {
-            constructor(containerId: SP.UI.ContainerID, strHtml: string, bSticky: boolean, strTooltip: string, onclickHandler: () => void, extraData: any);
-            constructor(containerId: SP.UI.ContainerID, strHtml: string, bSticky: boolean, strTooltip: string, onclickHandler: () => void);
-            constructor(containerId: SP.UI.ContainerID, strHtml: string, bSticky: boolean, strTooltip: string);
-            constructor(containerId: SP.UI.ContainerID, strHtml: string, bSticky: boolean);
-            constructor(containerId: SP.UI.ContainerID, strHtml: string);
-            get_id(): string;
-            Show(bNoAnimate: boolean): void;
-            Hide(bNoAnimate: boolean): void;
-        }
-        export class SPNotificationContainer {
-            constructor(id: number, element: any, layer: number, notificationLimit: number);
-            constructor(id: number, element: any, layer: number);
-            Clear(): void;
-            GetCount(): number;
-            SetEventHandler(eventId: SP.UI.EventID, eventHandler: any): void;
-        }
+
         export class Status {
-            static addStatus(strTitle: string, strHtml: string, atBegining: boolean): string;
+            static addStatus(strTitle: string, strHtml?: string, atBegining?: boolean): string;
             static appendStatus(sid: string, strTitle: string, strHtml: string): string;
             static updateStatus(sid: string, strHtml: string): void;
             static setStatusPriColor(sid: string, strColor: string): void;
@@ -6994,9 +7189,10 @@ declare module SP {
             static removeAllStatus(hide: boolean): void;
             constructor();
         }
-        export class Workspace {
-            static add_resized(handler: () => void): void;
-            static remove_resized(handler: () => void): void;
+
+        export module Workspace {
+            export function add_resized(handler: () => void): void;
+            export function remove_resized(handler: () => void): void;
         }
         export class Menu {
             static create(id: string): SP.UI.Menu;
@@ -7037,7 +7233,7 @@ declare module SP {
             /** Y coordinate of the dialog box. */
             y?: number;
             /** The dialog will be maximized when shown. */
-            showMaximized?: number;
+            showMaximized?: boolean;
             /** url of the page which is shown in the modal dialog. You should use either html or url attribute, but not both. */
             url?: string;
             /** specifies if close button should be shown on the dialog */
@@ -7069,7 +7265,7 @@ declare module SP {
             /** Y coordinate of the dialog box. */
             y: number;
             /** The dialog will be maximized when shown. */
-            showMaximized: number;
+            showMaximized: boolean;
             /** url of the page which is shown in the modal dialog. You should use either html or url attribute, but not both. */
             url: string;
             /** specifies if close button should be shown on the dialog */
@@ -7122,27 +7318,146 @@ declare module SP {
                 @param url overrides options.url
                 @param callback overrides options.dialogResultValueCallback
                 @param args overrides options.args */
-            static commonModalDialogOpen(url: string, options: SP.UI.IDialogOptions, callback: SP.UI.DialogReturnValueCallback, args: any): void;
+            static commonModalDialogOpen(url: string, options: SP.UI.IDialogOptions, callback?: SP.UI.DialogReturnValueCallback, args?: any): void;
             /** Refresh the page if specified dialogResult equals to SP.UI.DialogResult.OK */
             static RefreshPage(dialogResult: SP.UI.DialogResult): void;
             /** Show page specified by the url in a modal dialog. If the dialog returns SP.UI.DialogResult.OK, the page is refreshed. */
             static ShowPopupDialog(url: string): void;
             /** Show modal dialog specified by url, callback, height and width. */
-            static OpenPopUpPage(url: string, callback: SP.UI.DialogReturnValueCallback, width: number, height: number): void;
+            static OpenPopUpPage(url: string, callback: SP.UI.DialogReturnValueCallback, width?: number, height?: number): void;
             /** Displays a wait/loading modal dialog with the specified title, message, height and width. Height and width are defined in pixels. Cancel/close button is not shown. */
-            static showWaitScreenWithNoClose(title: string, message: string, height: number, width: number): SP.UI.ModalDialog;
+            static showWaitScreenWithNoClose(title: string, message?: string, height?: number, width?: number): SP.UI.ModalDialog;
             /** Displays a wait/loading modal dialog with the specified title, message, height and width. Height and width are defined in pixels. Cancel button is shown. If user clicks it, the callbackFunc is called. */
-            static showWaitScreenSize(title: string, message: string, callbackFunc: SP.UI.DialogReturnValueCallback, height: number, width: number): SP.UI.ModalDialog;
+            static showWaitScreenSize(title: string, message?: string, callbackFunc?: SP.UI.DialogReturnValueCallback, height?: number, width?: number): SP.UI.ModalDialog;
             static showPlatformFirstRunDialog(url: string, callbackFunc: SP.UI.DialogReturnValueCallback): SP.UI.ModalDialog;
-            static get_childDialog: any;
+            static get_childDialog(): SP.UI.ModalDialog;
             /** Closes the dialog using the specified dialog result. */
             close(dialogResult: SP.UI.DialogResult): void;
         }
 
+
+        export class Command {
+            constructor(name: string, displayName: string);
+            get_displayName(): string;
+            set_displayName(value: string): string;
+
+            get_tooltip(): string;
+            set_tooltip(value: string): string;
+
+            get_isEnabled(): boolean;
+            set_isEnabled(value: boolean): boolean;
+
+            get_href(): string;
+            get_name(): string;
+            get_elementIDPrefix(): string;
+            set_elementIDPrefix(value: string): string;
+
+            get_linkElement(): HTMLAnchorElement;
+
+            get_isDropDownCommand(): boolean;
+            set_isDropDownCommand(value: boolean): boolean;
+
+            attachEvents(): void;
+            render(builder: HtmlBuilder): void;
+
+
+            /**Should override*/
+            onClick(): void;
+
+        }
+
+
+        export class CommandBar {
+            constructor();
+            get_commands(): Command[];
+            get_dropDownThreshold(): number;
+            set_dropDownThreshold(value: number): number;
+            get_elementID(): string;
+            get_overrideClass(): string;
+            set_overrideClass(value: string): string;
+            addCommand(action: Command): void;
+            insertCommand(action: Command, position: number): void;
+            render(builder: HtmlBuilder): void;
+            attachEvents(): void;
+            findCommandByName(name: string): Command;
+        }
+
+
+        export class PagingControl {
+            constructor(id: string);
+            render(innerContent: string): string;
+            postRender(): void;
+            get_innerContent(): HTMLSpanElement;
+            get_innerContentClass(): string;
+            setButtonState(buttonId: number, state: number): void;
+            getButtonState(buttonId: number): number;
+            onWindowResized(): void;
+
+            /**Should override*/
+            onPrev(): void;
+            onNext(): void;
+
+            static ButtonIDs: {
+                prev: number;
+                next: number;
+            }
+
+            static ButtonState: {
+                hidden: number
+                disabled: number;
+                enabled: number;
+            }
+        }
+
+        export module Workplace {
+            export function add_resized(handler: Function): void;
+            export function remove_resized(handler: Function): void;
+        }
+
+        export module UIUtility {
+            export function generateRandomElementId(): string;
+            export function cancelEvent(evt: Event): void;
+            export function clearChildNodes(elem: HTMLElement): void;
+            export function hideElement(elem: HTMLElement): void;
+            export function showElement(elem: HTMLElement): void;
+            export function insertBefore(elem: HTMLElement, targetElement: HTMLElement): void;
+            export function insertAfter(elem: HTMLElement, targetElement: HTMLElement): void;
+            export function removeNode(elem: HTMLElement): void;
+            export function calculateOffsetLeft(elem: HTMLElement): number;
+            export function calculateOffsetTop(elem: HTMLElement): number;
+            export function createHtmlInputText(text: string): HTMLInputElement;
+            export function createHtmlInputCheck(isChecked: boolean): HTMLInputElement;
+            export function setInnerText(elem: HTMLElement, value: string): void;
+            export function getInnerText(elem: HTMLElement): string;
+            export function isTextNode(elem: HTMLElement): boolean;
+            export function isSvgNode(elem: HTMLElement): boolean;
+            export function isNodeOfType(elem: HTMLElement, tagNames: string[]): boolean;
+            export function focusValidOnThisNode(elem: HTMLElement): boolean;
+        }
     }
 }
 
-declare module SP {
+declare namespace SPNotifications {
+
+    export enum ContainerID {
+        Basic,
+        Status,
+    }
+    export enum EventID {
+        OnShow,
+        OnHide,
+        OnDisplayNotification,
+        OnRemoveNotification,
+        OnNotificationCountChanged,
+    }
+}
+
+declare class SPStatusNotificationData {
+    constructor(text: string, subText: string, imageUrl: string, sip: string);
+}
+declare function RefreshCommandUI():void;
+
+declare namespace SP {
     export module UI {
         export module Controls {
 
@@ -7229,7 +7544,7 @@ declare module SP {
     }
 }
 
-declare module SP {
+declare namespace SP {
 
     export module UserProfiles {
         /** Specifies types of changes made in the user profile store. */
@@ -7322,7 +7637,7 @@ declare module SP {
                 Pictures in bmp, jpg and png formats and up to 5,000,000 bytes are supported.
                 A user can upload a picture only to the user's own profile.
                 @param data Binary content of an image file */
-            setMyProfilePicture(data): void;
+            setMyProfilePicture(data: SP.Base64EncodedByteArray): void;
         }
 
         /** Specifies the capabilities of a personal site. */
@@ -7392,7 +7707,7 @@ declare module SP {
             /** Specifies the person's title. */
             get_title(): string;
             /** Represents all user profile properties including custom.
-                The privacy settings affect which properties can be retrieved. 
+                The privacy settings affect which properties can be retrieved.
                 Multiple values are delimited by the vertical bar "|".
                 Null values are specified as empty strings. */
             get_userProfileProperties(): { [name: string]: string; };
@@ -7481,7 +7796,7 @@ declare module SP {
             /** Updates the properties for followed item with specified URL.
                 @param url  URL that identifies the followed item.
                             The url parameter can identify an existing document or site using the url property of the original item.
-                            The url parameter can also identify a document with the following format: http://host/site?listId=<listGuid>&itemId=<itemId> 
+                            The url parameter can also identify a document with the following format: http://host/site?listId=<listGuid>&itemId=<itemId>
                 @param data Application-defined data stored with the followed item. */
             updateData(url: string, data: FollowedItemData): void;
             /** Returns the refreshed item that is being pointed to in the Social list.
@@ -7551,11 +7866,11 @@ declare module SP {
             /** Specifies the site identification (GUID) in the Content database for this item if this item is a site, or for its parent site if this item is not a site. */
             set_siteId(value: string): string;
             /** Specifies the subtype of this item.
-                If the ItemType is Site, the Subtype specifies the web template identification. 
+                If the ItemType is Site, the Subtype specifies the web template identification.
                 If the ItemType is Document, the Subtype has a value of 1. */
             get_subtype(): number;
             /** Specifies the subtype of this item.
-                If the ItemType is Site, the Subtype specifies the web template identification. 
+                If the ItemType is Site, the Subtype specifies the web template identification.
                 If the ItemType is Document, the Subtype has a value of 1. */
             set_subtype(value: number): number;
             /** Specifies the item of this item */
@@ -7563,17 +7878,17 @@ declare module SP {
             /** Specifies the item of this item */
             set_title(value: string): string;
             /** Specifies the GUID for this item in the Content database. */
-            get_uniqueId(): any;
+            get_uniqueId(): SP.Guid;
             /** Specifies the GUID for this item in the Content database. */
-            set_uniqueId(value): any;
+            set_uniqueId(value: SP.Guid): SP.Guid;
             /** Specifies the URL of this item. */
             get_url(): string;
             /** Specifies the URL of this item. */
             set_url(value: string): string;
             /** Specifies the site identification (GUID) in the Content database for this item if it is a site, or the identification of its parent site if this item is a document. */
-            get_webId(): string;
+            get_webId(): SP.Guid;
             /** Specifies the site identification (GUID) in the Content database for this item if it is a site, or the identification of its parent site if this item is a document. */
-            set_webId(value: any): any;
+            set_webId(value: SP.Guid): any;
         }
 
         export enum FollowedItemType {
@@ -7658,7 +7973,7 @@ declare module SP {
 
 }
 
-declare module SP {
+declare namespace SP {
 
     export module Utilities {
         export class Utility {
@@ -7804,11 +8119,23 @@ declare module SP {
             /** Same as get_url() */
             toString(): string;
         }
+
+        export class LocUtility {
+            static getLocalizedCountValue(locText: string, intervals: string, count: number): string;
+        }
+
+        export class VersionUtility {
+            static get_layoutsLatestVersionRelativeUrl(): string;
+            static get_layoutsLatestVersionUrl(): string;
+            static getLayoutsPageUrl(pageName: string): string;
+            static getImageUrl(imageName: string): string;
+        }
+
     }
 
     export module DateTimeUtil {
         export class SimpleDate {
-            construction(year: number, month: number, day: number, era: number);
+            constructor(year: number, month: number, day: number, era: number);
             get_year(): number;
             set_year(value: number): void;
             get_month(): number;
@@ -7826,7 +8153,7 @@ declare module SP {
     }
 }
 
-declare module SP {
+declare namespace SP {
     export module WebParts {
         export class LimitedWebPartManager extends SP.ClientObject {
             get_hasPersonalizedParts(): boolean;
@@ -7886,7 +8213,7 @@ declare module SP {
     }
 }
 
-declare module SP {
+declare namespace SP {
     export module Workflow {
         export class WorkflowAssociation extends SP.ClientObject {
             get_allowManual(): boolean;
@@ -7963,7 +8290,7 @@ declare module SP {
     }
 }
 
-declare module SP.WorkflowServices {
+declare namespace SP.WorkflowServices {
 
     export enum WorkflowStatus {
         notStarted,
@@ -7981,10 +8308,10 @@ declare module SP.WorkflowServices {
     export class InteropService extends SP.ClientObject {
         constructor(context: SP.ClientRuntimeContext, objectPath: SP.ObjectPathStaticProperty);
         static getCurrent(context: SP.ClientRuntimeContext): InteropService;
-        enableEvents(listId, itemGuid): void;
-        disableEvents(listId, itemGuid): void;
-        startWorkflow(associationName, correlationId, listId, itemGuid, workflowParameters): SP.GuidResult;
-        cancelWorkflow(instanceId): void;
+        enableEvents(listId: SP.Guid, itemGuid: SP.Guid): void;
+        disableEvents(listId: SP.Guid, itemGuid: SP.Guid): void;
+        startWorkflow(associationName: string, correlationId: SP.Guid, listId: SP.Guid, itemGuid: SP.Guid, workflowParameters: any): SP.GuidResult;
+        cancelWorkflow(instanceId: SP.Guid): void;
     }
 
     /** Represents a workflow definition and associated properties. */
@@ -8029,11 +8356,11 @@ declare module SP.WorkflowServices {
         /** RestrictToScope is a GUID value, used in conjunction with the RestrictToType property to further restrict the scope of the definition.
             For example, if the RestrictToType is "List", then setting the RestrictToScope to a particular list identifier limits the definition to be associable only to the specified list.
             If the RestrictToType is "List" but the RestrictToScope is null or the empty string, then the definition is associable to any list. */
-        get_restrictScope(): string;
+        get_restrictToScope(): string;
         /** RestrictToScope is a GUID value, used in conjunction with the RestrictToType property to further restrict the scope of the definition.
             For example, if the RestrictToType is "List", then setting the RestrictToScope to a particular list identifier limits the definition to be associable only to the specified list.
             If the RestrictToType is "List" but the RestrictToScope is null or the empty string, then the definition is associable to any list. */
-        set_restrictScope(value: string): string;
+        set_restrictToScope(value: string): string;
         /** RestrictToType determines the possible event source type for a workflow subscription that uses this definition.
             Possible values include "List", "Site", the empty string, or null.  */
         get_restrictToType(): string;
@@ -8060,7 +8387,6 @@ declare module SP.WorkflowServices {
 
     /** Manages workflow definitions and workflow activity authoring. */
     export class WorkflowDeploymentService extends SP.ClientObject {
-        constructor(context: SP.ClientRuntimeContext, objectPath: SP.ObjectPathStaticProperty);
         /** Returns an XML representation of a list of valid Workflow Manager Client 1.0 actions for the specified web (WorkflowInfo element). */
         getDesignerActions(web: SP.Web): SP.StringResult;
         /** Returns an XML representation of a collection of XAML class signatures for workflow definitions.
@@ -8084,7 +8410,7 @@ declare module SP.WorkflowServices {
         getDefinition(definitionId: string): WorkflowDefinition;
         /** Saves the collateral file of a workflow definition.
             @param workflowDefinitionId The guid identifier of the workflow definition.*/
-        saveCollateral(workflowDefinitionId: string, leafFileName: string, fileContent): void;
+        saveCollateral(workflowDefinitionId: string, leafFileName: string, fileContent: Base64EncodedByteArray): void;
         /** Deletes the URL of a workflow definition's collateral file.
             @param workflowDefinitionId The guid identifier of the workflow definition.  */
         deleteCollateral(workflowDefinitionId: string, leafFileName: string): void;
@@ -8101,7 +8427,7 @@ declare module SP.WorkflowServices {
             @param packageDefaultFilename The default filename to choose for the new package.
             @param packageTitle The title of the package.
             @param packageDescription The description of the package. */
-        packageDefinition(definitionId, packageDefaultFilename, packageTitle, packageDescription): SP.StringResult;
+        packageDefinition(definitionId: SP.Guid, packageDefaultFilename: string, packageTitle: string, packageDescription: string): SP.StringResult;
     }
 
     /** Represents an instance of a workflow association that performs on a list item the process that is defined in a workflow template */
@@ -8123,7 +8449,7 @@ declare module SP.WorkflowServices {
         /** Specifies the custom status set by workflow authors. */
         set_userStatus(value: string): string;
         /** Gets the unique identifier (GUID) of the subscription that instantiates the WorkflowInstance */
-        get_workflowSubscriptionId(): string;
+        get_workflowSubscriptionId(): SP.Guid;
         /** This method is internal and is not intended to be used in your code. */
         initPropertiesFromJson(parentNode: any): void;
 
@@ -8199,9 +8525,9 @@ declare module SP.WorkflowServices {
     /** Base class representing subscriptions for the external workflow host. */
     export class WorkflowSubscription extends SP.ClientObject {
         /** Gets the unique ID of the workflow definition to activate. */
-        get_definitionId();
+        get_definitionId(): SP.Guid;
         /** Sets the unique ID of the workflow definition to activate. */
-        set_definitionId(value);
+        set_definitionId(value: SP.Guid): SP.Guid;
         /** Gets a boolean value that specifies if the workflow subscription is enabled.
             When disabled, new instances of the subscription cannot be started, but existing instances will continue to run.  */
         get_enabled(): boolean;
@@ -8227,11 +8553,11 @@ declare module SP.WorkflowServices {
         /** Boolean value that specifies whether multiple workflow instances can be started manually on the same list item at the same time. This property can be used for list workflows only.  */
         set_manualStartBypassesActivationLimit(value: boolean): boolean;
         /** Gets the name of the workflow subscription for the specified event source.  */
-        get_name();
+        get_name(): string;
         /** Sets the name of the workflow subscription for the specified event source.  */
-        set_name(value);
+        set_name(value: string): string;
         /** Gets the properties and values to pass to the workflow definition when the subscription is matched. */
-        get_propertyDefinitions();
+        get_propertyDefinitions(): any;
         /** Gets the name of the workflow status field on the specified list.  */
         get_statusFieldName(): string;
         /** Gets or sets the name of the workflow status field on the specified list.  */
@@ -8268,8 +8594,8 @@ declare module SP.WorkflowServices {
             @param listId GUID of the list containing the event receiver to be unregistered.
             @eventName eventName The name of the event to be removed. */
         unregisterInterestInList(listId: string, eventName: string): void;
-        getSubscription(subscriptionId): WorkflowSubscription;
-        deleteSubscription(subscriptionId): WorkflowSubscription;
+        getSubscription(subscriptionId: SP.Guid): WorkflowSubscription;
+        deleteSubscription(subscriptionId: SP.Guid): WorkflowSubscription;
         /** Retrieves workflow subscriptions that contains all of the workflow subscriptions on the Web  */
         enumerateSubscriptions(): WorkflowSubscriptionCollection;
         /** Retrieves workflow subscriptions based on workflow definition */
@@ -8285,7 +8611,7 @@ declare module SP.WorkflowServices {
 
 
 
-declare module SP {
+declare namespace SP {
     export module Publishing {
         export class PublishingWeb extends ClientObject {
             static getPublishingWeb(context: ClientContext, web: Web): PublishingWeb;
@@ -8512,7 +8838,7 @@ declare module SP {
 
                 public get_view(): NavigationTermSetView;
 
-                public createTerm(termName: string, linkType: NavigationLinkType, termId: Guid);
+                public createTerm(termName: string, linkType: NavigationLinkType, termId: Guid): Taxonomy.Term;
 
                 public getTaxonomyTermStore(): Taxonomy.TermStore;
 
@@ -8569,7 +8895,7 @@ declare module SP {
 
                 public getResolvedAssociatedFolderUrl(): StringResult;
 
-                public getWebRelativeFriendlyUrl(); StringResult;
+                public getWebRelativeFriendlyUrl(): StringResult;
 
                 public getAllParentTerms(): NavigationTermCollection;
 
@@ -8603,7 +8929,7 @@ declare module SP {
 
                 public getAllTerms(): NavigationTermCollection;
 
-                public findTermForUrl(usr: string): NavigationTerm;
+                public findTermForUrl(url: string): NavigationTerm;
 
                 static getAsResolvedByWeb(context: ClientContext, termSet: Taxonomy.TermSet, web: Web, siteMapProviderName: string): NavigationTermSet;
                 static getAsResolvedByView(context: ClientContext, termSet: Taxonomy.TermSet, view: NavigationTermSetView): NavigationTermSet;
@@ -8646,11 +8972,11 @@ declare module SP {
             export class TaxonomyNavigation {
                 static getWebNavigationSettings(context: ClientContext, web: Web): WebNavigationSettings;
                 static getTermSetForWeb(context: ClientContext, web: Web, siteMapProviderName: string, includeInheritedSettings: boolean): NavigationTermSet;
-                static setCrawlAsFriendlyUrlPage(context: ClientContext, navigationTerm, crawlAsFriendlyUrlPage): BooleanResult;
+                static setCrawlAsFriendlyUrlPage(context: ClientContext, navigationTerm: Taxonomy.Term, crawlAsFriendlyUrlPage: boolean): BooleanResult;
                 static getNavigationLcidForWeb(context: ClientContext, web: Web): IntResult;
                 static flushSiteFromCache(context: ClientContext, site: Site): void;
                 static flushWebFromCache(context: ClientContext, web: Web): void;
-                static flushTermSetFromCache(context: ClientContext, webForPermissions, termStoreId: Guid, termSetId: Guid): void;
+                static flushTermSetFromCache(context: ClientContext, webForPermissions: Web, termStoreId: Guid, termSetId: Guid): void;
             }
 
             export class WebNavigationSettings extends ClientObject {
@@ -8681,6 +9007,327 @@ declare module SP {
                 public set_source(value: StandardNavigationSource): StandardNavigationSource;
             }
 
+        }
+    }
+}
+
+declare namespace SP {
+    export module CompliancePolicy {
+        export enum SPContainerType {
+            site,//: 0,
+            web,//: 1,
+            list//: 2
+        }
+
+        export class SPContainerId extends ClientObject {
+            static createFromList(context: ClientRuntimeContext, list: List): SPContainerId;
+            static createFromWeb(context: ClientRuntimeContext, web: Web): SPContainerId;
+            static createFromSite(context: ClientRuntimeContext, site: Site): SPContainerId;
+            static create(context: ClientRuntimeContext, containerId: any): SPContainerId;
+
+            get_containerType(): ContentType;
+            set_containerType(value: ContentType): ContentType;
+
+            get_listId(): SP.Guid;
+            set_listId(value: SP.Guid): SP.Guid;
+
+            get_siteId(): SP.Guid;
+            set_siteId(value: SP.Guid): SP.Guid;
+
+            get_siteUrl(): string;
+            set_siteUrl(value: string): string;
+
+            get_tenantId(): SP.Guid;
+            set_tenantId(value: SP.Guid): SP.Guid;
+
+            get_title(): string;
+            set_title(value: string): string;
+
+            get_version(): any;
+            set_version(value: any): any;
+
+            get_webId(): SP.Guid;
+            set_webId(value: SP.Guid): SP.Guid;
+
+            serialize(): SP.StringResult;
+        }
+
+        export class SPPolicyAssociation extends ClientObject {
+
+            get_allowOverride(): boolean;
+            set_allowOverride(value: boolean): boolean;
+
+            get_comment(): string;
+            set_comment(value: string): string;
+
+            get_defaultPolicyDefinitionConfigId(): any[];
+            set_defaultPolicyDefinitionConfigId(value: any[]): any[];
+
+            get_description(): string;
+            set_description(value: string): string;
+
+            get_identity(): boolean;
+            set_identity(value: boolean): boolean;
+
+            get_name(): string;
+            set_name(value: string): string;
+
+            get_policyApplyStatus(): any;
+            set_policyApplyStatus(value: any): any;
+
+            get_policyDefinitionConfigIds(): any[];
+            set_policyDefinitionConfigIds(value: any[]): any[];
+
+            get_scope(): any;
+            set_scope(value: any): any;
+
+            get_source(): any;
+            set_source(value: any): any;
+
+            get_version(): any;
+            set_version(value: any): any;
+
+            get_whenAppliedUTC(): Date;
+            set_whenAppliedUTC(value: Date): Date;
+
+            get_whenChangedUTC(): Date;
+            set_whenChangedUTC(value: Date): Date;
+
+            get_whenCreatedUTC(): Date;
+            set_whenCreatedUTC(value: Date): Date;
+        }
+
+        export class SPPolicyBinding extends ClientObject {
+
+            get_identity(): any;
+            set_identity(value: any): any;
+
+            get_isExempt(): boolean;
+            set_isExempt(value: boolean): boolean;
+
+            get_mode(): any;
+            set_mode(value: any): any;
+
+            get_name(): string;
+            set_name(value: string): string;
+
+            get_policyApplyStatus(): any;
+            set_policyApplyStatus(value: any): any;
+
+            get_policyAssociationConfigId(): any;
+            set_policyAssociationConfigId(value: any): any;
+
+            get_policyDefinitionConfigId(): any;
+            set_policyDefinitionConfigId(value: any): any;
+
+            get_policyRuleConfigId(): any;
+            set_policyRuleConfigId(value: any): any;
+
+            get_scope(): any;
+            set_scope(value: any): any;
+
+            get_source(): any;
+            set_source(value: any): any;
+
+            get_version(): any;
+            set_version(value: any): any;
+
+            get_whenAppliedUTC(): Date;
+            set_whenAppliedUTC(value: Date): Date;
+
+            get_whenChangedUTC(): Date;
+            set_whenChangedUTC(value: Date): Date;
+
+            get_whenCreatedUTC(): Date;
+            set_whenCreatedUTC(value: Date): Date;
+        }
+
+        export class SPPolicyDefinition extends ClientObject {
+
+            get_comment(): string;
+            set_comment(value: string): string;
+
+            get_createdBy(): any;
+            set_createdBy(value: any): any;
+
+            get_defaultPolicyRuleConfigId(): any;
+            set_defaultPolicyRuleConfigId(value: any): any;
+
+            get_description(): string;
+            set_description(value: string): string;
+
+            get_enabled(): boolean;
+            set_enabled(value: boolean): boolean;
+
+            get_identity(): any;
+            set_identity(value: any): any;
+
+            get_lastModifiedBy(): any;
+            set_lastModifiedBy(value: any): any;
+
+            get_name(): string;
+            set_name(value: string): string;
+
+            get_mode(): any;
+            set_mode(value: any): any;
+
+            get_scenario(): any;
+            set_scenario(value: any): any;
+
+            get_source(): any;
+            set_source(value: any): any;
+
+            get_version(): any;
+            set_version(value: any): any;
+
+            get_whenChangedUTC(): Date;
+            set_whenChangedUTC(value: Date): Date;
+
+            get_whenCreatedUTC(): Date;
+            set_whenCreatedUTC(value: Date): Date;
+
+
+        }
+
+        export class SPPolicyRule extends ClientObject {
+
+            get_comment(): string;
+            set_comment(value: string): string;
+
+            get_createdBy(): any;
+            set_createdBy(value: any): any;
+
+            get_description(): string;
+            set_description(value: string): string;
+
+            get_enabled(): boolean;
+            set_enabled(value: boolean): boolean;
+            get_identity(): any;
+            set_identity(value: any): any;
+
+            get_lastModifiedBy(): any;
+            set_lastModifiedBy(value: any): any;
+
+            get_mode(): any;
+            set_mode(value: any): any;
+
+            get_name(): string;
+            set_name(value: string): string;
+
+            get_policyDefinitionConfigId(): any;
+            set_policyDefinitionConfigId(value: any): any;
+
+            get_priority(): any;
+            set_priority(value: any): any;
+
+            get_ruleBlob(): any;
+            set_ruleBlob(value: any): any;
+
+            get_whenChangedUTC(): Date;
+            set_whenChangedUTC(value: Date): Date;
+
+            get_whenCreatedUTC(): Date;
+            set_whenCreatedUTC(value: Date): Date;
+        }
+
+        export class SPPolicyStore extends ClientObject {
+            constructor(context: ClientRuntimeContext, web: Web);
+
+            static createPolicyDefinition(context: ClientRuntimeContext): SPPolicyDefinition;
+            static createPolicyBinding(context: ClientRuntimeContext): SPPolicyBinding;
+            static createPolicyAssociation(context: ClientRuntimeContext): SPPolicyAssociation;
+            static createPolicyRule(context: ClientRuntimeContext): SPPolicyRule;
+
+
+            updatePolicyRule(policyRule: SPPolicyRule): void;
+
+            getPolicyRule(policyRuleId: any, throwIfNull: boolean): SPPolicyRule;
+
+            deletePolicyRule(policyRuleId: any): void;
+
+            notifyUnifiedPolicySync(notificationId: any, syncSvcUrl: string, changeInfos: any, syncNow: boolean, fullSyncForTenant: boolean): void;
+
+            updatePolicyDefinition(policyDefinition: SPPolicyDefinition): void;
+
+            getPolicyDefinition(policyDefinitionId: any): SPPolicyDefinition;
+
+            deletePolicyDefinition(policyDefinitionId: any): void;
+
+            getPolicyDefinitions(scenario: any): ClientObjectList<SPPolicyDefinition>;
+
+            updatePolicyBinding(policyBinding: SPPolicyBinding): void;
+
+            getPolicyBinding(policyBindingId: any): SPPolicyBinding;
+
+            deletePolicyBinding(policyBindingId: any): void;
+
+            updatePolicyAssociation(policyAssociation: SPPolicyAssociation): void;
+
+            getPolicyAssociation(policyAssociationId: any): SPPolicyAssociation;
+
+            getPolicyAssociationForContainer(containerId: SPContainerId): SPPolicyAssociation;
+
+            deletePolicyAssociation(policyAssociationId: any): void;
+        }
+
+        export class SPPolicyStoreProxy extends ClientObject {
+            constructor(context: ClientRuntimeContext, web: Web);
+
+            get_policyStoreUrl(): string;
+        }
+
+    }
+
+    export module Discovery {
+
+        export enum ExportStatus {
+            notStarted,//: 0,
+            started,//: 1,
+            complete,//: 2,
+            failed//: 3
+        }
+
+        export class Case extends ClientObject {
+            constructor(context: ClientRuntimeContext, web: Web);
+            getExportContent(sourceIds: number[]): SP.StringResult;
+        }
+        export class Export extends ClientObject {
+            constructor(context: ClientRuntimeContext, item: ListItem);
+            get_status(): ExportStatus;
+            set_status(value: ExportStatus): ExportStatus;
+            update(): void;
+            getExportContent(): SP.StringResult;
+        }
+    }
+
+    export module InformationPolicy {
+        export class ProjectPolicy extends SP.ClientObject {
+            constructor(context: ClientRuntimeContext, objectPath: ObjectPath);
+            get_description(): string;
+
+            get_emailBody(): string;
+            set_emailBody(value: string): string;
+
+            get_emailBodyWithTeamMailbox(): string;
+            set_emailBodyWithTeamMailbox(value: string): string;
+
+            get_emailSubject(): string;
+            set_emailSubject(value: string): string;
+
+            get_name(): string;
+            savePolicy(): void;
+
+
+            static getProjectPolicies(context: ClientRuntimeContext, web: Web): ClientObjectList<ProjectPolicy>;
+            static getCurrentlyAppliedProject(context: ClientRuntimeContext, web: Web): ProjectPolicy;
+            static applyProjectPolicy(context: ClientRuntimeContext, web: Web, projectPolicy: ProjectPolicy): void;
+            static openProject(context: ClientRuntimeContext, web: Web): void;
+            static closeProject(context: ClientRuntimeContext, web: Web): void;
+            static postponeProject(context: ClientRuntimeContext, web: Web): void;
+            static doesProjectHavePolicy(context: ClientRuntimeContext, web: Web): SP.BooleanResult;
+            static isProjectClosed(context: ClientRuntimeContext, web: Web): SP.BooleanResult;
+            static getProjectCloseDate(context: ClientRuntimeContext, web: Web): SP.DateTimeResult;
+            static getProjectExpirationDate(context: ClientRuntimeContext, web: Web): SP.DateTimeResult;
         }
     }
 }
@@ -8734,6 +9381,7 @@ interface ISPClientAutoFillData {
     AutoFillMenuOptionType?: number;
 }
 
+
 declare class SPClientPeoplePicker {
     static ValueName: string; // = 'Key';
     static DisplayTextName: string; // = 'DisplayText';
@@ -8753,54 +9401,112 @@ declare class SPClientPeoplePicker {
     };
 
     static InitializeStandalonePeoplePicker(clientId: string, value: ISPClientPeoplePickerEntity[], schema: ISPClientPeoplePickerSchema): void;
+    static ParseUserKeyPaste(userKey: string): string;
+    static GetTopLevelControl(elmChild: HTMLElement): HTMLElement;
+    static AugmentEntity(entity: ISPClientPeoplePickerEntity): ISPClientPeoplePickerEntity;
+    static AugmentEntitySuggestions(pickerObj: SPClientPeoplePicker, allEntities: ISPClientPeoplePickerEntity[], mergeLocal?: boolean): ISPClientPeoplePickerEntity[];
+    static PickerObjectFromSubElement(elmSubElement: HTMLElement): SPClientPeoplePicker;
+    static TestLocalMatch(strSearchLower: string, dataEntity: ISPClientPeoplePickerEntity): boolean;
+    static BuildUnresolvedEntity(key: string, dispText: string): ISPClientPeoplePickerEntity;
+    static AddAutoFillMetaData(pickerObj: SPClientPeoplePicker, options: ISPClientPeoplePickerEntity[], numOpts: number): ISPClientPeoplePickerEntity[];
+    static BuildAutoFillMenuItems(pickerObj: SPClientPeoplePicker, options: ISPClientPeoplePickerEntity[]): ISPClientPeoplePickerEntity[];
+    static IsUserEntity(entity: ISPClientPeoplePickerEntity): boolean;
+    static CreateSPPrincipalType(acctStr: string): number;
 
-    public TopLevelElementId: string;// '',
-    public EditorElementId: string;//'',
-    public AutoFillElementId: string;//'',
-    public ResolvedListElementId: string;//'',
-    public InitialHelpTextElementId: string;//'',
-    public WaitImageId: string;//'',
-    public HiddenInputId: string;//'',
-    public AllowEmpty: boolean;//true,
-    public ForceClaims: boolean;//false,
-    public AutoFillEnabled: boolean;//true,
-    public AllowMultipleUsers: boolean;//false,
+
+    public TopLevelElementId: string; // '',
+    public EditorElementId: string; //'',
+    public AutoFillElementId: string; //'',
+    public ResolvedListElementId: string; //'',
+    public InitialHelpTextElementId: string; //'',
+    public WaitImageId: string; //'',
+    public HiddenInputId: string; //'',
+    public AllowEmpty: boolean; //true,
+    public ForceClaims: boolean; //false,
+    public AutoFillEnabled: boolean; //true,
+    public AllowMultipleUsers: boolean; //false,
     public OnValueChangedClientScript: (pickerElementId: string, users: ISPClientPeoplePickerEntity[]) => void;
     public OnUserResolvedClientScript: (pickerElementId: string, users: ISPClientPeoplePickerEntity[]) => void;
     public OnControlValidateClientScript: (pickerElementId: string, users: ISPClientPeoplePickerEntity[]) => void;
-    public UrlZone: string;//null,
-    public AllUrlZones: boolean;//false,
-    public SharePointGroupID: number;//0,
-    public AllowEmailAddresses: boolean;//false,
+    public UrlZone: SP.UrlZone; //null,
+    public AllUrlZones: boolean; //false,
+    public SharePointGroupID: number; //0,
+    public AllowEmailAddresses: boolean; //false,
     public PPMRU: SPClientPeoplePickerMRU;
-    public UseLocalSuggestionCache: boolean;//true,
-    public CurrentQueryStr: string;//'',
-    public LatestSearchQueryStr: string;// '',
+    public UseLocalSuggestionCache: boolean; //true,
+    public CurrentQueryStr: string; //'',
+    public LatestSearchQueryStr: string; // '',
     public InitialSuggestions: ISPClientPeoplePickerEntity[];
     public CurrentLocalSuggestions: ISPClientPeoplePickerEntity[];
     public CurrentLocalSuggestionsDict: ISPClientPeoplePickerEntity;
-    public VisibleSuggestions: number;//5,
-    public PrincipalAccountType: string;//'',
+    public VisibleSuggestions: number; //5,
+    public PrincipalAccountType: string; //'',
     public PrincipalAccountTypeEnum: SP.Utilities.PrincipalType;
-    public EnabledClaimProviders: string;//'',
-    public SearchPrincipalSource: SP.Utilities.PrincipalSource;//null,
-    public ResolvePrincipalSource: SP.Utilities.PrincipalSource;//null,
-    public MaximumEntitySuggestions: number;//30,
-    public EditorWidthSet: boolean;//false,
-    public QueryScriptInit: boolean;//false,
-    public AutoFillControl: string;//null,
-    public TotalUserCount: number;//0,
-    public UnresolvedUserCount: number;//0,
-    public UserQueryDict: ISPClientPeoplePickerEntity;
-    public ProcessedUserList: ISPClientPeoplePickerEntity;
-    public HasInputError: boolean;//false,
-    public HasServerError: boolean;//false,
-    public ShowUserPresence: boolean;//true,
-    public TerminatingCharacter: string;//';',
-    public UnresolvedUserElmIdToReplace: string;//'',
-    public WebApplicationID: SP.Guid;//'{00000000-0000-0000-0000-000000000000}',
-
+    public EnabledClaimProviders: string; //'',
+    public SearchPrincipalSource: SP.Utilities.PrincipalSource; //null,
+    public ResolvePrincipalSource: SP.Utilities.PrincipalSource; //null,
+    public MaximumEntitySuggestions: number; //30,
+    public EditorWidthSet: boolean; //false,
+    public QueryScriptInit: boolean; //false,
+    public AutoFillControl: SPClientAutoFill; //null,
+    public TotalUserCount: number; //0,
+    public UnresolvedUserCount: number; //0,
+    public UserQueryDict: { [index: string]: SP.StringResult };
+    public ProcessedUserList: { [index: string]: SPClientPeoplePickerProcessedUser };
+    public HasInputError: boolean; //false,
+    public HasServerError: boolean; //false,
+    public ShowUserPresence: boolean; //true,
+    public TerminatingCharacter: string; //';',
+    public UnresolvedUserElmIdToReplace: string; //'',
+    public WebApplicationID: SP.Guid; //'{00000000-0000-0000-0000-000000000000}',
     public GetAllUserInfo(): ISPClientPeoplePickerEntity[];
+
+    public SetInitialValue(entities: ISPClientPeoplePickerEntity[], initialErrorMsg?: string): void
+    public AddUserKeys(userKeys: string, bSearch: boolean): void;
+    public BatchAddUserKeysOperation(allKeys: string[], numProcessed: number): void;
+    public ResolveAllUsers(fnContinuation: () => void): void;
+    public ExecutePickerQuery(queryIds: string, onSuccess: (queryId: string, result: SP.StringResult) => void, onFailure: (queryId: string, result: SP.StringResult) => void, fnContinuation: () => void): void;
+    public AddUnresolvedUserFromEditor(bRunQuery?: boolean): void;
+    public AddUnresolvedUser(unresolvedUserObj: ISPClientPeoplePickerEntity, bRunQuery?: boolean): void;
+    public UpdateUnresolvedUser(results: SP.StringResult, user: ISPClientPeoplePickerEntity): void;
+    public AddPickerSearchQuery(queryStr: string): string;
+    public AddPickerResolveQuery(queryStr: string): string;
+    public GetPeoplePickerQueryParameters(): SP.UI.ApplicationPages.ClientPeoplePickerQueryParameters;
+    public AddProcessedUser(userObject: ISPClientPeoplePickerEntity, fResolved?: boolean): string;
+    public DeleteProcessedUser(elmToRemove: HTMLElement): void;
+    public OnControlValueChanged(): void;
+    public OnControlResolvedUserChanged(): void;
+    public EnsureAutoFillControl(): void;
+    public ShowAutoFill(resultsTable: ISPClientAutoFillData[]): void;
+    public FocusAutoFill(): void;
+    public BlurAutoFill(): void;
+    public IsAutoFillOpen(): boolean;
+    public EnsureEditorWidth(): void;
+    public SetFocusOnEditorEnd(): void;
+    public ToggleWaitImageDisplay(bShowImage?: boolean): void;
+    public SaveAllUserKeysToHiddenInput(): void;
+    public GetCurrentEditorValue(): string;
+    public GetControlValueAsJSObject(): ISPClientPeoplePickerEntity[];
+    public GetAllUserKeys(): string;
+    public GetControlValueAsText(): string;
+    public IsEmpty(): boolean;
+    public IterateEachProcessedUser(fnCallback: (index: number, user: SPClientPeoplePickerProcessedUser) => void): void;
+    public HasResolvedUsers(): boolean;
+    public Validate(): void;
+    public ValidateCurrentState(): void
+    public GetUnresolvedEntityErrorMessage(): string;
+    public ShowErrorMessage(msg: string): void;
+    public ClearServerError(): void;
+    public SetServerError(): void;
+    public OnControlValidate(): void;
+    public SetEnabledState(bEnabled: boolean): void;
+    public DisplayLocalSuggestions(): void;
+    public CompileLocalSuggestions(input: string): void;
+    public PlanningGlobalSearch(): boolean;
+    public AddLoadingSuggestionMenuOption(): void;
+    public ShowingLocalSuggestions(): boolean;
+    public ShouldUsePPMRU(): boolean;
+    public AddResolvedUserToLocalCache(resolvedEntity: ISPClientPeoplePickerEntity, resolveText: string): void;
 }
 
 interface ISPClientPeoplePickerSchema {
@@ -8876,22 +9582,1628 @@ interface ISPClientPeoplePickerEntity {
         Department: string;
         Email: string;
     };
-    MultipleMatches: Object[];
+    MultipleMatches: ISPClientPeoplePickerEntity[];
     DomainText?: string;
     [key: string]: any;
 }
 
-declare module Microsoft {
+declare class SPClientPeoplePickerProcessedUser {
+    UserContainerElementId: string;// '',
+    DisplayElementId: string;// '',
+    PresenceElementId: string;// '',
+    DeleteUserElementId: string;// '',
+    SID: string;// '',
+    DisplayName: string;// '',
+    SIPAddress: string;// '',
+    UserInfo: ISPClientPeoplePickerEntity;// null,
+    ResolvedUser: boolean;// true,
+    Suggestions: ISPClientAutoFillData[];// null,
+    ErrorDescription: string;// '',
+    ResolveText: string;// '',
+    public UpdateResolvedUser(newUserInfo: ISPClientPeoplePickerEntity, strNewElementId: string): void;
+    public UpdateSuggestions(entity: ISPClientPeoplePickerEntity): void;
+    public BuildUserHTML(): string;
+    public UpdateUserMaxWidth(): void;
+    public ResolvedAsUnverifiedEmail(): string;
+
+    static BuildUserPresenceHtml(elmId: string, strSip: string, bResolved?: boolean): string;
+    static GetUserContainerElement(elmChild: HTMLElement): HTMLElement;
+    static HandleProcessedUserClick(ndClicked: HTMLElement): void;
+    static DeleteProcessedUser(elmToRemove: HTMLElement): void;
+    static HandleDeleteProcessedUserKey(e: Event): void;
+    static HandleResolveProcessedUserKey(e: Event): void;
+}
+
+declare namespace Microsoft {
     export module Office {
         export module Server {
             export module ReputationModel {
                 export class Reputation {
                     constructor();
-                    static setLike(context: SP.ClientContext, listId: string, itemId: number, like: boolean);
-                    static setRating(context: SP.ClientContext, listId: string, itemId: number, rating: number);
+                    static setLike(context: SP.ClientContext, listId: string, itemId: number, like: boolean): void;
+                    static setRating(context: SP.ClientContext, listId: string, itemId: number, rating: number): void;
                 }
             }
         }
     }
 }
 
+/** Available only in SharePoint Online*/
+declare namespace Define {
+    export function loadScript(url: string, successCallback: () => void, errCallback: () => void): void;
+    /** Loads script from _layouts/15/[req].js */
+    export function require(req: string, callback: Function): void;
+    /** Loads script from _layouts/15/[req].js */
+    export function require(req: string[], callback: Function): void;
+    export function define(name: string, deps: string[], def: Function): void;
+}
+
+/** Available only in SharePoint Online*/
+declare namespace Verify {
+    export function ArgumentType(arg: string, expected: any): void;
+}
+
+
+/** Available only in SharePoint Online*/
+declare namespace BrowserStorage {
+    export var local: CachedStorage;
+    export var session: CachedStorage;
+
+    /** Available only in SharePoint Online*/
+    interface CachedStorage {
+        getItem(key: string): string;
+        setItem(key: string, value: string): void;
+        removeItem(key: string): void;
+        clead(): void;
+        length: number;
+    }
+}
+
+/** Available only in SharePoint Online*/
+declare namespace BrowserDetection {
+    export var browseris: Browseris;
+}
+
+/** Available only in SharePoint Online*/
+declare namespace CSSUtil {
+    export function HasClass(elem: HTMLElement, className: string): boolean;
+    export function AddClass(elem: HTMLElement, className: string): void;
+    export function RemoveClass(elem: HTMLElement, className: string): void;
+    export function pxToFloat(pxString: string): number;
+    export function pxToNum(px: string): number;
+    export function numToPx(n: number): string;
+    export function getCurrentEltStyleByNames(elem: HTMLElement, styleNames: string[]): string;
+    export function getCurrentStyle(elem: HTMLElement, cssStyle: string): string;
+    export function getCurrentStyleCorrect(element: HTMLElement, camelStyleName: string, dashStyleName: string): string;
+    export function getOpacity(element: HTMLElement): number;
+    export function setOpacity(element: HTMLElement, value: number): void;
+}
+
+/** Available only in SharePoint Online*/
+declare namespace DOM {
+    export var rightToLeft: boolean;
+    export function cancelDefault(evt: Event): void;
+    export function AbsLeft(el: HTMLElement): number;
+    export function AbsTop(el: HTMLElement): number;
+    export function CancelEvent(evt: Event): void;
+    export function GetElementsByName(nae: string): NodeList;
+    export function GetEventCoords(evt: Event): { x: number; y: number; };
+    export function GetEventSrcElement(evt: Event): HTMLElement;
+    export function GetInnerText(el: HTMLElement): string;
+    export function PreventDefaultNavigation(evt: Event): void;
+    export function SetEvent(eventName: string, eventFunc: Function, el: HTMLElement): void;
+}
+
+/** Available only in SharePoint Online*/
+declare namespace Encoding {
+    export function EncodeScriptQuote(str: string): string;
+    export function HtmlEncode(str: string): string;
+    export function HtmlDecode(str: string): string;
+    export function AttrQuote(str: string): string;
+    export function ScriptEncode(str: string): string;
+    export function ScriptEncodeWithQuote(str: string): string;
+    export function CanonicalizeUrlEncodingCase(str: string): string;
+}
+
+/** Available only in SharePoint Online*/
+declare namespace IE8Support {
+    export function arrayIndexOf<T>(array: T[], item: T, startIdx?: number): number;
+    export function attachDOMContentLoaded(handler: Function): void;
+    export function getComputedStyle(domObj: HTMLElement, camelStyleName: string, dashStyleName: string): string;
+    export function stopPropagation(evt: Event): void;
+}
+
+/** Available only in SharePoint Online*/
+declare namespace StringUtil {
+    export function BuildParam(stPattern: string, ...params: any[]): string;
+    export function ApplyStringTemplate(str: string, ...params: any[]): string;
+}
+
+/** Available only in SharePoint Online*/
+declare namespace TypeUtil {
+    export function IsArray(value: any): boolean;
+    export function IsNullOrUndefined(value: any): boolean;
+}
+
+/** Available only in SharePoint Online*/
+declare namespace Nav {
+    export var ajaxNavigate: AjaxNavigate;
+    export function convertRegularURLtoMDSURL(webUrl: string, fullPath: string): string;
+    export function isMDSUrl(url: string): boolean;
+    export function isPageUrlValid(url: string): boolean;
+    export function isPortalTemplatePage(url: string): boolean;
+    export function getAjaxLocationWindow(): string;
+    export function getSource(defaultSource?: string): string;
+    export function getUrlKeyValue(keyName: string, bNoDecode: boolean, url: string, bCaseInsensitive: boolean): string;
+    export function getWindowLocationNoHash(hre: string): string;
+    export function goToHistoryLink(el: HTMLAnchorElement, strVersion: string): void;
+    export function getGoToLinkUrl(el: HTMLAnchorElement): string;
+    export function goToLink(el: HTMLAnchorElement): void;
+    export function goToLinkOrDialogNewWindow(el: HTMLAnchorElement): void;
+    export function goToDiscussion(url: string): void;
+    export function onClickHook(evt: Event, topElm: HTMLElement): void;
+    export function pageUrlValidation(url: string, alertString: string): string;
+    export function parseHash(hash: string): Object;
+    export function navigate(url: string): void;
+    export function removeMDSQueryParametersFromUrl(url: string): string;
+    export function urlFromHashBag(hashObject: Object): string;
+    export function wantsNewTab(evt: Event): boolean;
+}
+
+/** Available only in SharePoint Online*/
+declare namespace URI_Encoding {
+    export function encodeURIComponent(str: string, bAsUrl?: boolean, bForFilterQuery?: boolean, bForCallback?: boolean): string;
+    export function escapeUrlForCallback(str: string): string;
+}
+
+interface IListItem {
+    ID: number;
+    ContentTypeId: string;
+}
+
+/** Available only in SharePoint Online*/
+declare namespace ListModule {
+    export module Util {
+        export function createViewEditUrl(renderCtx: SPClientTemplates.RenderContext, listItem: IListItem, useEditFormUrl?: boolean, appendSource?: boolean): string;
+        export function createItemPropertiesTitle(renderCtx: SPClientTemplates.RenderContext, listItem: IListItem): string;
+        export function clearSelectedItemsDict(context: any): void;
+        export function ctxInitItemState(context: any): void;
+        export function getAttributeFromItemTable(itemTableParam: HTMLElement, strAttributeName: string, strAttributeOldName: string): string
+        export function getSelectedItemsDict(context: any): any;
+        export function removeOnlyPagingArgs(url: string): string;
+        export function removePagingArgs(url: string): string;
+        export function showAttachmentRows(): void;
+    }
+}
+
+/** Available only in SharePoint Online*/
+declare namespace SPThemeUtils {
+    export function ApplyCurrentTheme(): void;
+    export function WithCurrentTheme(resultCallback: Function): void;
+    export function UseClientSideTheming(): boolean;
+    export function Suspend(): void;
+}
+
+declare namespace SP {
+    export module JsGrid {
+
+        export enum TextDirection {
+            Default, //0,
+            RightToLeft, //1,
+            LeftToRight //2
+        }
+
+        export enum PaneId {
+            MainGrid, //0,
+            PivotedGrid, //1,
+            Gantt //2
+        }
+
+        export enum PaneLayout {
+            GridOnly, //0,
+            GridAndGantt, //1,
+            GridAndPivotedGrid //2
+
+        }
+        export enum EditMode {
+            ReadOnly, //0,
+            ReadWrite, //1,
+            ReadOnlyDefer, //2,
+            ReadWriteDefer, //3,
+            Defer //4
+        }
+
+        export enum GanttDrawBarFlags {
+            LeftLink, //0x01,
+            RightLink //0x02
+
+        }
+        export enum GanttBarDateType {
+            Start, //0,
+            End //1
+        }
+
+        export enum ValidationState {
+            Valid, //0,
+            Pending, //1,
+            Invalid //2
+        }
+
+        export enum HierarchyMode {
+            None, //0,
+            Standard, //1,
+            Grouping //2
+        }
+
+        export enum EditActorWriteType {
+            Both, //1,
+            LocalizedOnly, //2,
+            DataOnly, //3,
+            Either //4
+        }
+
+        export enum EditActorReadType {
+            Both, //1,
+            LocalizedOnly, //2,
+            DataOnly //3
+        }
+
+        export enum EditActorUpdateType {
+            Committed, //0,
+            Uncommitted, //1
+        }
+
+        export enum SortMode {
+            Ascending, //1,
+            Descending, //-1,
+            None //0
+        }
+
+        export module RowHeaderStyleId {
+            export var Transfer: string; //'Transfer',
+            export var Conflict: string; //'Conflict'
+
+        }
+
+        export module RowHeaderAutoStyleId {
+            export var Dirty: string; //'Dirty',
+            export var Error: string; //'Error',
+            export var NewRow: string; //'NewRow'
+        }
+
+        export enum RowHeaderStatePriorities {
+            Dirty, //10,
+            Transfer, //30,
+            CellError, //40,
+            Conflict, //50,
+            RowError, //60,
+            NewRow //90
+        }
+
+        export enum UpdateSerializeMode {
+            Cancel, //0,
+            Default, //1,
+            PropDataOnly, //2,
+            PropLocalizedOnly, //3,
+            PropBoth //4
+        }
+
+        export enum UpdateTrackingMode {
+            PropData, //2,
+            PropLocalized, //3,
+            PropBoth //4
+        }
+
+        export module UserAction {
+            export var UserEdit: string; //'User Edit':string;
+            export var DeleteRecord: string; //'Delete Record':string;
+            export var InsertRecord: string; //'Insert Record':string;
+            export var Indent: string; //'Indent':string;
+            export var Outdent: string; //'Outdent':string;
+            export var Fill: string; //'Fill':string;
+            export var Paste: string; //'Paste':string;
+            export var CutPaste: string; //'Cut/Paste'
+        }
+
+        export enum ReadOnlyActiveState {
+            ReadOnlyActive, //0,
+            ReadOnlyDisabled, //1
+        }
+
+        export interface IValue {
+            data?: any;
+            localized?: string;
+        }
+        export enum SelectionTypeFlags {
+            MultipleCellRanges,
+            MultipleRowRanges,
+            MultipleColRanges
+        }
+
+
+        export class JsGridControl {
+            constructor(parentNode: HTMLElement, bShowLoadingBanner: boolean);
+            /** Returns true if Init method has been executed successfully */
+            IsInitialized(): boolean;
+            /** Replaces the control TableCache object with the provided one */
+            ResetData(cache: SP.JsGrid.TableCache): void;
+            /** Initialize the control */
+            Init(parameters: SP.JsGrid.JsGridControl.Parameters): void;
+            Cleanup(): void;
+            /** Removes all event handlers and markup associated with the control */
+            Dispose(): void;
+
+            // todo
+            NotifyDataAvailable(): void;
+            NotifySave(): void;
+            NotifyHide(): void;
+            NotifyResize(): void;
+            ClearTableView(): void;
+            HideInitialLoadingBanner(): void;
+            ShowInitialGridErrorMsg(errorMsg: string): void;
+            ShowGridErrorMsg(errorMsg: string): void;
+            LaunchPrintView(
+                additionalScriptFiles: any,
+                beforeInitFnName: any,
+                beforeInitFnArgsObj: any,
+                title: string,
+                bEnableGantt: boolean,
+                optGanttDelegateNames?: any,
+                optInitTableViewParamsFnName?: any,
+                optInitTableViewParamsFnArgsObj?: any,
+                optInitGanttStylesFnName?: any,
+                optInitGanttStylesFnArgsObj?: any): void;
+            GetAllDataJson(fnOnFinished: any, optFnGetCellStyleID?: any): void;
+            SetTableView(tableViewParams: any): void;
+            SetRowView(rowViewParam: any): void;
+
+            /** Enable grid after Disable. */
+            Enable(): void;
+            /** Covers the grid with the semi-transparent panel, preventing any operations with it.
+                Additionally, displays loading animated gif and optMsg as the message next to it.
+                If optMsg is not specified, displays "Loading..." text. */
+            Disable(optMsg?: string): void;
+            /** Enables grid editing */
+            EnableEditing(): void;
+            /** Disables grid editing: all the records become readonly */
+            DisableEditing(): void;
+            /** Switches the currently selected cell into edit mode: displays edit control and sets focus into it.
+                Returns true if success. */
+            TryBeginEdit(): boolean;
+            FinalizeEditing(fnContinue: Function, fnError: Function): void;
+            /** Get diff tracker object that tracks changes to the grid data. */
+            GetDiffTracker(): SP.JsGrid.Internal.DiffTracker;
+            /** Moves focus to the JsGrid control */
+            Focus(): void;
+
+            /** Try saving the new record row (aka entry row) if it was edited. */
+            TryCommitFirstEntryRecords(fnCommitComplete: { (): void }): void;
+            /** Removes all new record rows (aka entry rows), including unsaved and even empty ones.
+                The latter seems to be a bug, as I haven't found any easy way to restore the empty entry row. */
+            ClearUncommitedEntryRecords(): void;
+            /** Returns true if there are any unsaved new record rows (aka entry rows). */
+            AnyUncommitedEntryRecords(): boolean;
+
+
+            // todo
+            AnyUncomittedProvisionalRecords(): boolean;
+
+            /** Gets record based on the recordKey
+                @recordKey internal unique id of a row. You can get recordKey from view index via GetRecordKeyByViewIndex method. */
+            GetRecord(recordKey: number): IRecord;
+            /** Get entry record with the specified key.
+                Entry record is a special type of record because it represents a new record that doesn't exist yet. */
+            GetEntryRecord(key: any): any;
+            /** Determine if the specified record key identifies valid entry row. */
+            IsEntryRecord(recordKey: number): boolean;
+            /** Determine whether the specified cell is editable. */
+            IsCellEditable(record: IRecord, fieldKey: string, optPaneId?: any): boolean;
+            /** Adds one of builtin row state indicator icons into the row header.
+                Please pass one of the values of SP.JsGrid.RowHeaderStyleId
+                Row header is the leftmost gray column of the table. */
+            AddBuiltInRowHeaderState(recordKey: number, rowHeaderStateId: string): void;
+            /** Adds the specified state into the row header.
+                There can be several row header states for one row. Only one is shown (according to the Priority).
+                Row header is the leftmost gray column of the table. */
+            AddRowHeaderState(recordKey: number, rowHeaderState: SP.JsGrid.RowHeaderState): void;
+            /** Removes header state with specified id from the row. */
+            RemoveRowHeaderState(recordKey: number, rowHeaderStateId: string): void;
+
+            GetCheckSelectionManager(): any;
+            UpdateProperties(propertyUpdates: any, changeName: any, optChangeKey?: any): any;
+            GetLastRecordKey(): string;
+            InsertProvisionalRecordBefore(beforeRecordKey: number, newRecord: any, initialValues: any): any;
+            InsertProvisionalRecordAfter(afterRecordKey: number, newRecord: any, initialValues: any): any;
+            IsProvisionalRecordKey(recordKey: number): boolean;
+            InsertRecordBefore(beforeRecordKey: number, newRecord: any, optChangeKey?: any): any;
+            InsertRecordAfter(afterRecordKey: number, newRecord: any, optChangeKey?: any): any;
+            InsertHiddenRecord(recordKey: number, changeKey: any, optAfterRecordKey?: any): any;
+            DeleteRecords(recordKeys: any, optChangeKey?: any): any;
+            IndentRecords(recordKeys: any, optChangeKey?: any): any;
+            OutdentRecords(recordKeys: any, optChangeKey?: any): any;
+            ReorderRecords(beginRecordKey: number, endRecordKey: number, afterRecordKey: number, bSelectAfterwards: boolean): any;
+            GetContiguousRowSelectionWithoutEntryRecords(): { begin: any; end: any; keys: any };
+            CanMoveRecordsUpByOne(recordKeys: any): boolean;
+            CanMoveRecordsDownByOne(recordKeys: any): boolean;
+            MoveRecordsUpByOne(recordKeys: any): any;
+            MoveRecordsDownByOne(recordKeys: any): any;
+            GetReorderRange(recordKeys: any): any;
+            GetNodeExpandCollapseState(recordKey: number): any;
+            ToggleExpandCollapse(recordKey: number): void;
+
+            /** Attach event handler to a particular event type */
+            AttachEvent(eventType: JsGrid.EventType, fnOnEvent: { (args: IEventArgs): void }): void;
+            /** Detach a previously set event handler */
+            DetachEvent(eventType: JsGrid.EventType, fnOnEvent: any): void;
+
+            /** Set a delegate. Delegates are way to replace default functionality with custom one. */
+            SetDelegate(delegateKey: JsGrid.DelegateType, fn: any): void;
+            /** Get current delegate. */
+            GetDelegate(delegateKey: JsGrid.DelegateType): any;
+
+            /** Re-render the specified row in the view. */
+            RefreshRow(recordKey: number): void;
+            /** Re-render all rows in the view.
+                It can be used e.g. if you have some custom display controls and they are rendered differently depending on some external settings.
+                In this case, if you update the external settings, obviously you have to then update the view for these settings to take effect. */
+            RefreshAllRows(): void;
+            /** Clears undo queue, and also differencies tracker state and versions manager state. */
+            ClearChanges(): void;
+
+            GetGanttZoomLevel(): any;
+            SetGanttZoomLevel(level: any): void;
+            ScrollGanttToDate(date: any): void;
+
+            /** Get top record view index.
+                You can then use GetRecordKeyByViewIndex to convert this value into the recordKey. */
+            GetTopRecordIndex(): number;
+            /** Get number of rows displayed in the current view. */
+            GetViewRecordCount(): number;
+            /** Get record key for a row that is specified by the viewIdx.
+                viewIdx - index of the row in the view, use GetTopRecordIndex to get the first one.
+                Returns recordKey, which is a unique numeric identifier of a row within a dataset.
+                Main difference between viewIdx and recordKey is that viewIdx is only unique within a view,
+                e.g. if you do paging, it can be same for different records.
+             */
+            GetRecordKeyByViewIndex(viewIdx: number): number;
+            /** Opposite to GetRecordKeyByViewIndex, resolves the view index of the record based on record key.
+                recordKey - unique numeric identifier of a row in the current dataset.
+                Returns viewIdx - index of the row in the current view */
+            GetViewIndexOfRecord(recordKey: number): number;
+            /** Get top row index. Usually returns 0.
+                You can then use GetRecordKeyByViewIndex to convert this value into the recordKey. */
+            GetTopRowIndex(): number;
+
+            GetOutlineLevel(record: any): any;
+            GetSplitterPosition(): any;
+            SetSplitterPosition(pos: any): void;
+            GetLeftColumnIndex(optPaneId?: any): any;
+            EnsurePaneWidth(): void;
+
+            /** Show a previously hidden column at a specified position.
+                If atIdx is not defined, column will be shown at it's previous position. */
+            ShowColumn(columnKey: string, atIdx?: number): void;
+            /** Hide the specified column from grid */
+            HideColumn(columnKey: string): void;
+            /** Update column descriptions */
+            UpdateColumns(columnInfoCollection: ColumnInfoCollection): void;
+            GetColumns(optPaneId?: string): ColumnInfo[];
+            /** Get ColumnInfo object by fieldKey
+                @fieldKey when working with SharePoint data sources, fieldKey corresponds to field internal name */
+            GetColumnByFieldKey(fieldKey: string, optPaneId?: any): ColumnInfo;
+            /** Adds a column, based on the specified grid field */
+            AddColumn(columnInfo: ColumnInfo, gridField: GridField): void;
+
+            /** Switches column header in rename mode, showing textbox and thus giving the user possibility to rename this column. */
+            RenameColumn(columnKey: string): void;
+            /** Shows a dialog where user can reorder columns and change their widths. */
+            ShowColumnConfigurationDialog(): void;
+
+
+            /** Returns true, if there are any errors in the JsGrid */
+            AnyErrors(): boolean;
+            /** Returns true, if there are any errors in a specified row */
+            AnyErrorsInRecord(recordKey: number): boolean;
+            /** Set error for the specified by recordKey and fieldKey cell.
+                Returns id of the error, so that later you can clear the error using this id. */
+            SetCellError(recordKey: number, fieldKey: string, errorMessage: string): number;
+            /** Set error for the specified by recordKey row.
+                In the leftmost column of this row, exclamation mark error indicator will appear.
+                Clicking on this indicator will cause the specified error message appear in form of a reddish tooltip.
+                Returns id of the error, so that later you can clear the error using this id. */
+            SetRowError(recordKey: number, errorMessage: string): number;
+            /** Clear specified by id error that was previously set on the specified by recordKey and fieldKey cell. */
+            ClearCellError(recordKey: number, fieldKey: string, id: number): void;
+            /** Clear all errors in the specified cell. */
+            ClearAllErrorsOnCell(recordKey: number, fieldKey: string): void;
+            /** Clear specified by id error that was previously set on the specified by recordKey row. */
+            ClearRowError(recordKey: number, id: number): void;
+            /** Clear all errors in the specified row. */
+            ClearAllErrorsOnRow(recordKey: number): void;
+            /** Get error message for the specified cell.
+                If many errors are set on the cell, only first is returned.
+                If there are no errors in the cell, returns null. */
+            GetCellErrorMessage(recordKey: number, fieldKey: string): string;
+            /** Get error message for the specified row.
+                If many errors are set on the row, only first is returned.
+                If there are no errors in the row, returns null. */
+            GetRowErrorMessage(recordKey: number): string;
+            /** This method is used mostly when you have a rather tall JSGrid and you want to ensure that user sees
+                that some error has occured.
+                You can specify the minId or/and filter function.
+                If minId is specified, method searches for an error with first id which is greater than minId.
+                Scrolls to the Returns the id of the found record.
+                If there aren't any errors, that satisfy the conditions, method does nothing and returns null. */
+            ScrollToAndExpandNextError(minId?: number, fnFilter?: { (recordKey: number, fieldKey: string, id: number): boolean }): any;
+            /** Same as ScrollToAndExpandNextError, but searches within the specified record.
+                recordKey should be not null, otherwise you'll get an exception.
+                bDontExpand controls whether the error tooltip will be shown (if bDontExpand=true, tooltip will not be shown). */
+            ScrollToAndExpandNextErrorOnRecord(minId?: number, recordKey?: number, fnFilter?: { (recordKey: number, fieldKey: string, id: number): boolean }, bDontExpand?: boolean): any;
+
+            GetFocusedItem(): any;
+            SendKeyDownEvent(eventInfo: Sys.UI.DomEvent): any;
+            /** Moves cursor to entry record (the row that is used to add new records) */
+            JumpToEntryRecord(): void;
+
+            SelectRowRange(rowIdx1: number, rowIdx2: number, bAppend: boolean, optPaneId?: string): void;
+            SelectColumnRange(colIdx1: number, colIdx2: number, bAppend: boolean, optPaneId?: string): void;
+            SelectCellRange(rowIdx1: number, rowIdx2: number, colIdx1: number, colIdx2: number, bAppend: boolean, optPaneId?: string): void;
+            SelectRowRangeByKey(rowKey1: any, rowKey2: any, bAppend: boolean, optPaneId?: string): void;
+            SelectColumnRangeByKey(colKey1: any, colKey2: any, bAppend: boolean, optPaneId?: string): void;
+            SelectCellRangeByKey(recordKey1: string, recordKey2: string, colKey1: any, colKey2: any, bAppend: boolean, optPaneId?: string): void;
+
+            ChangeKeys(oldKey: any, newKey: any): void;
+            GetSelectedRowRanges(optPaneId?: any): any;
+            GetSelectedColumnRanges(optPaneId?: any): any;
+            GetSelectedRanges(optPaneId?: any): any;
+            MarkPropUpdateInvalid(recordKey: number, fieldKey: any, changeKey: any, optErrorMsg?: any): any;
+            GetCurrentChangeKey(): any;
+            CreateAndSynchronizeToNewChangeKey(): any;
+            CreateDataUpdateCmd(bUseCustomInitialUpdate: boolean): any;
+            IsChangeKeyApplied(changeKey: any): any;
+            GetChangeKeyForVersion(version: any): any;
+            TryReadPropForChangeKey(recordKey: number, fieldKey: any, changeKey: any): any;
+            GetUnfilteredHierarchyMap(): any;
+            GetHierarchyState(bDecompressGuidKeys: boolean): any;
+            IsGroupingRecordKey(recordKey: number): boolean;
+            IsGroupingColumnKey(recordKey: number): boolean;
+            GetSelectedRecordKeys(bDuplicatesAllowed: boolean): any;
+            /** Cut data from currently selected cells into the clipboard.
+                Will not work if current selection contains entry row or readonly cells. */
+            CutToClipboard(): void;
+            /** Copy data from currently selected cells into the clipboard. */
+            CopyToClipboard(): void;
+            /** Paste data from clipboard into currently selected cells. */
+            PasteFromClipboard(): void;
+            TryRestoreFocusAfterInsertOrDeleteColumns(origFocus: any): void;
+            /** Get undo manager for performing undo/redo operations programmatically. */
+            GetUndoManager(): SP.JsGrid.CommandManager;
+            /** Gets number of records visible in the current view, including the entry row. */
+            GetVisibleRecordCount(): number;
+            /** Returns index of the system RecordIndicatorCheckBoxColumn. If not present in the view, returns null. */
+            GetRecordIndicatorCheckBoxColumnIndex(): number;
+            /** Determines if the specified record is visible in the current view. */
+            IsRecordVisibleInView(recordKey: number): boolean;
+            GetHierarchyQueryObject(): any;
+            GetSpCsrRenderCtx(): any;
+        }
+
+        export interface IChangeKey {
+            Reserve(): void;
+            Release(): void;
+            GetVersionNumber(): number;
+            CompareTo(changeKey: IChangeKey): number;
+        }
+
+        export enum EventType {
+            OnCellFocusChanged,
+            OnRowFocusChanged,
+            OnCellEditBegin,
+            OnCellEditCompleted,
+            OnRightClick,
+            OnPropertyChanged,
+            OnRecordInserted,
+            OnRecordDeleted,
+            OnRecordChecked,
+            OnCellErrorStateChanged,
+            OnEntryRecordAdded,
+            OnEntryRecordCommitted,
+            OnEntryRecordPropertyChanged,
+            OnRowErrorStateChanged,
+            OnDoubleClick,
+            OnBeforeGridDispose,
+            OnSingleCellClick,
+            OnInitialChangesForChangeKeyComplete,
+            OnVacateChange,
+            OnGridErrorStateChanged,
+            OnSingleCellKeyDown,
+            OnRecordsReordered,
+            OnBeforePropertyChanged,
+            OnRowEscape,
+            OnBeginRenameColumn,
+            OnEndRenameColumn,
+            OnPasteBegin,
+            OnPasteEnd,
+            OnBeginRedoDataUpdateChange,
+            OnBeginUndoDataUpdateChange
+        }
+
+        export enum DelegateType {
+            ExpandColumnMenu,
+            AddColumnMenuItems,
+            Sort,
+            Filter,
+            InsertRecord,
+            DeleteRecords,
+            IndentRecords,
+            OutdentRecords,
+            IsRecordInsertInView,
+            ExpandDelayLoadedHierarchyNode,
+            AutoFilter,
+            ExpandConflictResolution,
+            GetAutoFilterEntries,
+            LaunchFilterDialog,
+            ShowColumnConfigurationDialog,
+            GetRecordEditMode,
+            GetGridRowStyleId,
+            CreateEntryRecord,
+            TryInsertEntryRecord,
+            WillAddColumnMenuItems,
+            NextPage,
+            AddNewColumn,
+            RemoveColumnFromView,
+            ReorderColumnPositionInView,
+            TryCreateProvisionalRecord,
+            CanReorderRecords,
+            AddNewColumnMenuItems,
+            TryBeginPaste,
+            AllowSelectionChange,
+            GetFieldEditMode,
+            GetFieldReadOnlyActiveState,
+            OnBeforeRecordReordered
+        }
+
+        export enum ClickContext {
+            SelectAllSquare,
+            RowHeader,
+            ColumnHeader,
+            Cell,
+            Gantt,
+            Other
+        }
+
+        export class RowHeaderState {
+            constructor(id: string, img: SP.JsGrid.Image, priority: SP.JsGrid.RowHeaderStatePriorities, tooltip: string, fnOnClick: { (eventInfo: Sys.UI.DomEvent, recordKey: number): void });
+            GetId(): string;
+            GetImg(): SP.JsGrid.Image;
+            GetPriority(): SP.JsGrid.RowHeaderStatePriorities;
+            GetOnClick(): { (eventInfo: Sys.UI.DomEvent, recordKey: number): void };
+            GetTooltip(): string;
+            toString(): string;
+        }
+
+        export class Image {
+            /** optOuterCssNames and optImgCssNames are strings that contain css class names separated by spaces.
+                optImgCssNames are applied to the img tag.
+                if bIsClustered, image is rendered inside div, and optOuterCssNames are applied to the div. */
+            constructor(imgSrc: string, bIsClustered: boolean, optOuterCssNames: string, optImgCssNames: string, bIsAnimated: boolean);
+            imgSrc: string;
+            bIsClustered: boolean;
+            optOuterCssNames: string;
+            imgCssNames: string;
+            bIsAnimated: boolean;
+            /** Renders the image with specified alternative text and on-click handler.
+                If bHideTooltip == false, then alternative text is also shown as the tooltip (title attribute). */
+            Render(altText: string, clickFn: { (eventInfo: Sys.UI.DomEvent): void }, bHideTooltip: boolean): HTMLElement;
+        }
+
+        export interface IEventArgs { }
+        export module EventArgs {
+            export class OnEntryRecordAdded implements IEventArgs {
+                constructor(recordKey: number);
+                recordKey: number;
+            }
+
+            export class CellFocusChanged implements IEventArgs {
+                constructor(newRecordKey: number, newFieldKey: string, oldRecordKey: number, oldFieldKey: string);
+                newRecordKey: number;
+                newFieldKey: string;
+                oldRecordKey: number;
+                oldFieldKey: string;
+            }
+            export class RowFocusChanged implements IEventArgs {
+                constructor(newRecordKey: number, oldRecordKey: number);
+                newRecordKey: number;
+                oldRecordKey: number;
+            }
+            export class CellEditBegin implements IEventArgs {
+                constructor(recordKey: number, fieldKey: string);
+                recordKey: number;
+                fieldKey: string;
+            }
+            export class CellEditCompleted implements IEventArgs {
+                constructor(recordKey: number, fieldKey: string, changeKey: JsGrid.IChangeKey, bCancelled: boolean);
+                recordKey: number;
+                fieldKey: string;
+                changeKey: JsGrid.IChangeKey;
+                bCancelled: boolean;
+            }
+            export class Click implements IEventArgs {
+                constructor(eventInfo: Sys.UI.DomEvent, context: JsGrid.ClickContext, recordKey: number, fieldKey: string);
+                eventInfo: Sys.UI.DomEvent;
+                context: JsGrid.ClickContext;
+                recordKey: number;
+                fieldKey: string;
+            }
+            export class PropertyChanged implements IEventArgs {
+                constructor(recordKey: number, fieldKey: string, oldProp: SP.JsGrid.Internal.PropertyUpdate, newProp: SP.JsGrid.Internal.PropertyUpdate, propType: SP.JsGrid.IPropertyType, changeKey: SP.JsGrid.IChangeKey, validationState: SP.JsGrid.ValidationState);
+                recordKey: number;
+                fieldKey: string;
+                oldProp: SP.JsGrid.Internal.PropertyUpdate;
+                newProp: SP.JsGrid.Internal.PropertyUpdate;
+                propType: SP.JsGrid.IPropertyType;
+                changeKey: SP.JsGrid.IChangeKey;
+                validationState: SP.JsGrid.ValidationState;
+            }
+            export class RecordInserted implements IEventArgs {
+                constructor(recordKey: number, recordIdx: number, afterRecordKey: number, changeKey: JsGrid.IChangeKey);
+                recordKey: number;
+                recordIdx: number;
+                afterRecordKey: number;
+                changeKey: JsGrid.IChangeKey;
+            }
+            export class RecordDeleted implements IEventArgs {
+                constructor(recordKey: number, recordIdx: number, changeKey: JsGrid.IChangeKey);
+                recordKey: number;
+                recordIdx: number;
+                changeKey: JsGrid.IChangeKey;
+            }
+            export class RecordChecked implements IEventArgs {
+                constructor(recordKeySet: SP.Utilities.Set, bChecked: boolean);
+                recordKeySet: SP.Utilities.Set;
+                bChecked: boolean;
+            }
+            export class OnCellErrorStateChanged implements IEventArgs {
+                constructor(recordKey: number, fieldKey: string, bAddingError: boolean, bCellCurrentlyHasError: boolean, bCellHadError: boolean, errorId: number);
+                recordKey: number;
+                fieldKey: string;
+                bAddingError: boolean;
+                bCellCurrentlyHasError: boolean;
+                bCellHadError: boolean;
+                errorId: number;
+            }
+            export class OnRowErrorStateChanged implements IEventArgs {
+                constructor(recordKey: number, bAddingError: boolean, bErrorCurrentlyInRow: boolean, bRowHadError: boolean, errorId: number, message: string);
+                recordKey: number;
+                bAddingError: boolean;
+                bErrorCurrentlyInRow: boolean;
+                bRowHadError: boolean;
+                errorId: number;
+                message: string;
+            }
+            export class OnEntryRecordCommitted implements IEventArgs {
+                constructor(origRecKey: string, recordKey: number, changeKey: JsGrid.IChangeKey);
+                originalRecordKey: number;
+                recordKey: number;
+                changeKey: JsGrid.IChangeKey
+            }
+            export class SingleCellClick implements IEventArgs {
+                constructor(eventInfo: Sys.UI.DomEvent, recordKey: number, fieldKey: string);
+                eventInfo: Sys.UI.DomEvent;
+                recordKey: number;
+                fieldKey: string;
+            }
+            export class PendingChangeKeyInitiallyComplete implements IEventArgs {
+                constructor(changeKey: JsGrid.IChangeKey);
+                changeKey: JsGrid.IChangeKey
+            }
+            export class VacateChange implements IEventArgs {
+                constructor(changeKey: JsGrid.IChangeKey);
+                changeKey: JsGrid.IChangeKey
+            }
+            export class GridErrorStateChanged implements IEventArgs {
+                constructor(bAnyErrors: boolean);
+                bAnyErrors: boolean;
+            }
+            export class SingleCellKeyDown implements IEventArgs {
+                constructor(eventInfo: Sys.UI.DomEvent, recordKey: number, fieldKey: string);
+                eventInfo: Sys.UI.DomEvent;
+                recordKey: number;
+                fieldKey: string;
+            }
+            export class OnRecordsReordered implements IEventArgs {
+                constructor(recordKeys: string[], changeKey: JsGrid.IChangeKey);
+                reorderedKeys: string[];
+                changeKey: JsGrid.IChangeKey;
+            }
+            export class OnRowEscape implements IEventArgs {
+                constructor(recordKey: number);
+                recordKey: number;
+            }
+            export class OnEndRenameColumn implements IEventArgs {
+                constructor(columnKey: string, originalColumnTitle: string, newColumnTitle: string);
+                columnKey: string;
+                originalColumnTitle: string;
+                newColumnTitle: string;
+            }
+            export class OnBeginRedoDataUpdateChange implements IEventArgs {
+                constructor(changeKey: JsGrid.IChangeKey);
+                changeKey: JsGrid.IChangeKey
+            }
+            export class OnBeginUndoDataUpdateChange implements IEventArgs {
+                constructor(changeKey: JsGrid.IChangeKey);
+                changeKey: JsGrid.IChangeKey
+            }
+
+        }
+
+        export module JsGridControl {
+            export class Parameters {
+                tableCache: SP.JsGrid.TableCache;
+                name: any; // TODO
+                bNotificationsEnabled: boolean;
+                styleManager: IStyleManager;
+                minHeaderHeight: number;
+                minRowHeight: number;
+                commandMgr: SP.JsGrid.CommandManager;
+                enabledRowHeaderAutoStates: SP.Utilities.Set;
+                tableViewParams: TableViewParameters;
+                bEnableDiffTracking: boolean;
+                isRTL: boolean;
+
+            }
+            export class TableViewParameters {
+                paneLayout: SP.JsGrid.PaneLayout;
+                defaultEditMode: SP.JsGrid.EditMode;
+                allowedSelectionTypes: SP.JsGrid.SelectionTypeFlags;
+
+                bMovableColumns: boolean;
+                bResizableColumns: boolean;
+                bHidableColumns: boolean;
+                bSortableColumns: boolean;
+                bAutoFilterableColumns: boolean;
+                bRowHeadersEnabled: boolean;
+                bRecordIndicatorCheckboxesEnabled: boolean;
+                bFillControlEnabled: boolean;
+                bEditingEnabled: boolean;
+                bNewRowEnabled: boolean;
+
+                checkSelectionCheckboxHiddenRecordKeys: string[];
+                checkSelectionCheckboxDisabledRecordKeys: string[];
+                checkSelectionCheckedRecordKeys: string[];
+
+                keyFieldName: string;
+                gridFieldMap: { [name: string]: GridField };
+
+                columns: ColumnInfoCollection;
+                messageOverrides: any; //TODO
+                operationalConstantsFieldKeyMap: any; //TODO
+
+                ganttParams: GanttParameters;
+                pivotedGridParams: PivotedGridParameters;
+                rowViewParams: RowViewParameters;
+            }
+            export class PivotedGridParameters {
+        	    //this.dateRange = null;
+             //   this.ganttBarStyles = null;
+             //   this.ganttZoomLevel = 3;
+             //   this.fnRenderGanttRow = null;
+             //   this.fnGetGanttBarDate = null;
+             //   this.fnGetGanttBarStyleIds = null;
+             //   this.fnGetPredecessors = null;
+             //   this.workDayStart = _spRegionalSettings.workDayStart;
+             //   this.workDayEnd = _spRegionalSettings.workDayEnd;
+             //   this.fieldKeyRedrawFilter = null;
+            }
+
+            export class GanttParameters {
+                columns: ColumnInfoCollection;
+            }
+
+            export class RowViewParameters {
+                hierarchyMode: SP.JsGrid.HierarchyMode;
+                view: any;
+
+                topViewIdx: number;
+
+
+                groupingLevel: any;
+                groupingRecordKeyPrefix: any;
+                autoFilterState: any;
+                unfilteredHierarchyMgr: any;
+                hierarchyDelayLoadKeys: any;
+                hierarchyState: any;
+                sortState: any;
+                filterState: any;
+                autoFilterEntries: any;
+                filteredDescCounts: any;
+
+            }
+        }
+
+        export class CommandManager {
+            // todo
+        }
+
+        export class TableCache {
+            // todo
+        }
+
+        export interface IStyleManager {
+            gridPaneStyle: IStyleType.GridPane;
+            columnHeaderStyleCollection: {
+                normal: IStyleType.Header;
+                normalHover: IStyleType.Header;
+                partSelected: IStyleType.Header;
+                partSelectedHover: IStyleType.Header;
+                allSelected: IStyleType.Header;
+                allSelectedHover: IStyleType.Header;
+            };
+            rowHeaderStyleCollection: {
+                normal: IStyleType.Header;
+                normalHover: IStyleType.Header;
+                partSelected: IStyleType.Header;
+                partSelectedHover: IStyleType.Header;
+                allSelected: IStyleType.Header;
+                allSelectedHover: IStyleType.Header;
+            };
+            splitterStyleCollection: {
+                normal: IStyleType.Splitter;
+                normalHandle: IStyleType.SplitterHandle;
+                hover: IStyleType.Splitter;
+                hoverHandle: IStyleType.SplitterHandle;
+                dra: IStyleType.Splitter;
+                dragHandle: IStyleType.SplitterHandle;
+            };
+            defaultCellStyle: IStyleType.Cell;
+            readOnlyCellStyle: IStyleType.Cell;
+            readOnlyFocusedCellStyle: IStyleType.Cell;
+            timescaleTierStyle: IStyleType.TimescaleTier;
+            groupingStyles: any[];
+            widgetDockStyle: IStyleType.Widget;
+            widgetDockHoverStyle: IStyleType.Widget;
+            widgetDockPressedStyle: IStyleType.Widget;
+            RegisterCellStyle(styleId: string, cellStyle: IStyleType.Cell): void;
+            GetCellStyle(styleId: string): IStyleType.Cell;
+            UpdateSplitterStyleFromCss(styleObject: IStyleType.Splitter, splitterStyleNameCollection: any): void;
+            UpdateHeaderStyleFromCss(styleObject: IStyleType.Header, headerStyleNameCol: any): void;
+            UpdateGridPaneStyleFromCss(styleObject: IStyleType.GridPane, gridStyleNameCollection: any): void;
+            UpdateDefaultCellStyleFromCss(styleObject: IStyleType.Cell, cssClass: string): void;
+            UpdateGroupStylesFromCss(styleObject: IStyleType.Cell, prefix: string): void;
+        }
+
+        export interface IStyleType { }
+        export module IStyleType {
+            export interface Splitter extends IStyleType {
+                outerBorderColor: any;
+                leftInnerBorderColor: any;
+                innerBorderColor: any;
+                backgroundColor: any;
+            }
+            export interface SplitterHandle extends IStyleType {
+                outerBorderColor: any;
+                leftInnerBorderColor: any;
+                innerBorderColor: any;
+                backgroundColor: any;
+                gripUpperColor: any;
+                gripLowerColor: any;
+            }
+            export interface GridPane {
+                verticalBorderColor: any;
+                verticalBorderStyle: any;
+                horizontalBorderColor: any;
+                horizontalBorderStyle: any;
+                backgroundColor: any;
+                columnDropIndicatorColor: any;
+                rowDropIndicatorColor: any;
+                linkColor: any;
+                visitedLinkColor: any;
+                copyRectForeBorderColor: any;
+                copyRectBackBorderColor: any;
+                focusRectBorderColor: any;
+                selectionRectBorderColor: any;
+                selectedCellBgColor: any;
+                readonlySelectionRectBorderColor: any;
+                changeHighlightCellBgColor: any;
+                fillRectBorderColor: any;
+                errorRectBorderColor: any;
+            }
+            export interface Header {
+                font: any;
+                fontSize: any;
+                fontWeight: any;
+                textColor: any;
+                backgroundColor: any;
+                outerBorderColor: any;
+                innerBorderColor: any;
+                eyeBrowBorderColor: any;
+                eyeBrowColor: any;
+                menuColor: any;
+                menuBorderColor: any;
+                resizeColor: any;
+                resizeBorderColor: any;
+                menuHoverColor: any;
+                menuHoverBorderColor: any;
+                resizeHoverColor: any;
+                resizeHoverBorderColor: any;
+                eyeBrowHoverColor: any;
+                eyeBrowHoverBorderColor: any;
+                elementClickColor: any;
+                elementClickBorderColor: any;
+            }
+            export interface Cell extends IStyleType {
+                /** -> CSS font-family */
+                font: any;
+                /** -> CSS font-size */
+                fontSize: any;
+                /** -> CSS font-weight */
+                fontWeight: any;
+                /** -> CSS font-style */
+                fontStyle: any;
+                /** -> CSS color */
+                textColor: any;
+                /** -> CSS background-color */
+                backgroundColor: any;
+                /** -> CSS text-align */
+                textAlign: any;
+            }
+            export interface Widget {
+                backgroundColor: any;
+                borderColor: any;
+            }
+            export interface RowHeaderStyle {
+                backgroundColor: any;
+                outerBorderColor: any;
+                innerBorderColor: any;
+            }
+            export interface TimescaleTier {
+                font: any;
+                fontSize: any;
+                fontWeight: any;
+                textColor: any;
+                backgroundColor: any;
+                verticalBorderColor: any;
+                verticalBorderStyle: any;
+                horizontalBorderColor: any;
+                horizontalBorderStyle: any;
+                outerBorderColor: any;
+                todayLineColor: any;
+            }
+        }
+
+        export class Style {
+
+            static Type: {
+                Splitter: IStyleType.Splitter;
+                SplitterHandle: IStyleType.SplitterHandle;
+                GridPane: IStyleType.GridPane;
+                Header: IStyleType.Header;
+                RowHeaderStyle: IStyleType.RowHeaderStyle;
+                TimescaleTier: IStyleType.TimescaleTier;
+                Cell: IStyleType.Cell;
+                Widget: IStyleType.Widget;
+            };
+
+            static SetRTL: { (rtlObject: any): void; };
+            static MakeJsGridStyleManager: { (): IStyleManager };
+            static CreateStyleFromCss: { (styleType: IStyleType, cssStyleName: string, optExistingStyle?: any, optClassId?: any): any; };
+            static CreateStyle: { (styleType: IStyleType, styleProps: any): any; };
+            static MergeCellStyles: { (majorStyle: any, minorStyle: any): any; };
+            static ApplyCellStyle: { (td: HTMLTableCellElement, style: any): void; };
+            static ApplyRowHeaderStyle: { (domObj: HTMLElement, style: any, fnGetHeaderSibling: Function): void; };
+            static ApplyCornerHeaderBorderStyle: { (domObj: HTMLElement, colStyle: any, rowStyle: any): void; };
+            static ApplyHeaderInnerBorderStyle: { (domObj: HTMLElement, bIsRowHeader: any, headerObject: any): void };
+            static ApplyColumnContextMenuStyle: { (domObj: HTMLElement, style: any): void };
+            static ApplySplitterStyle: { (domObj: HTMLElement, style: any): void };
+            static MakeBorderString: { (width: number, style: string, color: string): string };
+            static GetCellStyleDefaultBackgroundColor: { (): string };
+
+        }
+
+        export class ColumnInfoCollection {
+            constructor(colInfoArray: any[]);
+            GetColumnByKey(key: string): any;
+            GetColumnArray(bVisibleOnly?: boolean): any[];
+            GetColumnMap(): { [key: string]: any; };
+            AppendColumn(colInfo: any): void;
+            InsertColumnAt(idx: number, colInfo: any): void;
+            RemoveColumn(key: string): void;
+            /** Returns null if the specified column is not found or hidden. */
+            GetColumnPosition(key: string): number;
+        }
+
+        export class ColumnInfo {
+            constructor(name: string, imgSrc: string, key: string, width: number);
+            /** Column title */
+            name: string;
+            /** Column image URL.
+                If not null, the column header cell will show the image instead of title text.
+                If the title is defined at the same time as the imgSrc, the title will be shown as a tooltip. */
+            imgSrc: string;
+            /** Custom image HTML.
+                If you define this in addition to the imgSrc attribute, then instead of standard img tag
+                the custom HTML defined by this field will be used. */
+            imgRawSrc: string;
+            /** Column identifier */
+            columnKey: string;
+            /** Field keys of the fields, that are displayed in this column */
+            fieldKeys: string[];
+            /** Width of the column */
+            width: number;
+            bOpenMenuOnContentClick: boolean;
+            /** always returns 'column' */
+            ColumnType(): string;
+            /** true by default */
+            isVisible: boolean;
+            /** true by default */
+            isHidable: boolean;
+            /** true by default */
+            isResizable: boolean;
+            /** true by default */
+            isSortable: boolean;
+            /** true by default */
+            isAutoFilterable: boolean;
+            /** false by default */
+            isFooter: boolean;
+            /** determine whether the cells in this column should be clickable */
+            fnShouldLinkSingleValue: { (record: IRecord, fieldKey: string, dataValue: any, localizedValue: any): boolean };
+            /** if a particular cell is determined as clickable by fnShouldLinkSingleValue, this function will be called when the cell is clicked */
+            fnSingleValueClicked: { (record: IRecord, fieldKey: string, dataValue: any, localizedValue: any): void };
+            /** this is used when you need to make some of the cells in the column readonly, but at the same time keep others editable */
+            fnGetCellEditMode: { (record: IRecord, fieldKey: string): JsGrid.EditMode };
+            /** this function should return name of the display control for the given cell in the column
+                the name should be previously associated with the display control via SP.JsGrid.PropertyType.Utils.RegisterDisplayControl method */
+            fnGetDisplayControlName: { (record: IRecord, fieldKey: string): string };
+            /** this function should return name of the edit control for the given cell in the column
+                the name should be previously associated with the edit control via SP.JsGrid.PropertyType.Utils.RegisterEditControl method */
+            fnGetEditControlName: { (record: IRecord, fieldKey: string): string };
+            /** set widget control names for a particular cell
+                widgets are basically in-cell buttons with associated popup controls, e.g. date selector or address book button
+                standard widget ids are defined in the SP.JsGrid.WidgetControl.Type enumeration
+                it is also possible to create your own widgets
+                usually this function is not used, and instead, widget control names are determined via PropertyType
+             */
+            fnGetWidgetControlNames: { (record: IRecord, fieldKey: string): string[] };
+            /** this function should return id of the style for the given cell in the column
+                styles and their ids are registered for a JsGridControl via jsGridParams.styleManager.RegisterCellStyle method */
+            fnGetCellStyleId: { (record: IRecord, fieldKey: string, dataValue: any): string };
+            /** set custom tooltip for the given cell in the column. by default, localized value is displayed as the tooltip */
+            fnGetSingleValueTooltip: { (record: IRecord, fieldKey: string, dataValue: any, localizedValue: any): string };
+        }
+
+
+        export interface IRecord {
+            /** True if this is an entry row */
+            bIsNewRow: boolean;
+
+            /** Please use SetProp and GetProp */
+            properties: { [fieldKey: string]: IPropertyBase };
+
+            /** returns recordKey */
+            key(): number;
+            /** returns raw data value for the specified field */
+            GetDataValue(fieldKey: string): any;
+            /** returns localized text value for the specified field */
+            GetLocalizedValue(fieldKey: string): string;
+            /** returns true if data value for the specified field is available */
+            HasDataValue(fieldKey: string): boolean;
+            /** returns true if localized text value for the specified field is available */
+            HasLocalizedValue(fieldKey: string): boolean;
+
+            GetProp(fieldKey: string): IPropertyBase;
+            SetProp(fieldKey: string, prop: IPropertyBase): void;
+
+            /** Update the specified field with the specified value */
+            AddFieldValue(fieldKey: string, value: any): void;
+            /** Removes value of the specified field.
+                Does not refresh the view. */
+            RemoveFieldValue(fieldKey: string): void;
+        }
+
+
+        export class RecordFactory {
+            constructor(gridFieldMap: any, keyColumnName: string, fnGetPropType: any);
+            gridFieldMap: any;
+            /** Create a new record */
+            MakeRecord(dataPropMap: any, localizedPropMap: any, bKeepRawData: boolean): IRecord;
+        }
+
+        export interface IPropertyBase {
+            HasLocalizedValue(): boolean;
+            HasDataValue(): boolean;
+            Clone(): IPropertyBase;
+            /** dataValue actually is cloned */
+            Update(dataValue: any, localizedValue: string): void;
+            GetLocalized(): string;
+            GetData(): any;
+        }
+
+        export class Property {
+            static MakeProperty(dataValue: any, localizedValue: string, bHasDataValue: boolean, bHasLocalizedValue: boolean, propType: any): IPropertyBase;
+            static MakePropertyFromGridField(gridField: any, dataValue: any, localizedVal: string, optPropType?: any): IPropertyBase;
+        }
+
+        export class GridField {
+            constructor(key: string, hasDataValue: boolean, hasLocalizedValue: boolean, textDirection: TextDirection, defaultCellStyleId?: any, editMode?: EditMode, dateOnly?: boolean, csrInfo?: any);
+            key: string;
+            hasDataValue: boolean;
+            hasLocalizedValue: boolean;
+            textDirection: TextDirection;
+            dateOnly: boolean;
+            csrInfo: any;
+            GetEditMode(): EditMode;
+            SetEditMode(mode: EditMode): void;
+            GetDefaultCellStyleId(): any;
+            CompareSingleDataEqual(dataValue1: any, dataValue2: any): boolean;
+            GetPropType(): any;
+            GetSingleValuePropType(): any;
+            GetMultiValuePropType(): any;
+            SetSingleValuePropType(svPropType: any): void;
+            SetIsMultiValue(listSeparator: any): void;
+            GetIsMultiValue(): boolean;
+        }
+
+        export interface IEditActorGridContext {
+            jsGridObj: JsGridControl;
+            parentNode: HTMLElement;
+            styleManager: IStyleManager;
+            RTL: any;
+            emptyValue: any;
+            bLightFocus: boolean;
+            OnKeyDown: { (domEvent: Sys.UI.DomEvent): void; };
+        }
+
+        export interface IEditControlGridContext extends IEditActorGridContext {
+            OnActivateActor(): void;
+            OnDeactivateActor(): void;
+        }
+
+        export interface IPropertyType {
+            ID: string;
+            BeginValidateNormalizeConvert(recordKey: number, fieldKey: string, newValue: any, bIsLocalized: boolean, fnCallback: { (args: { isValid: boolean; dataValue: any; normalizedLocValue: string }): void; }, fnError: any): void;
+        }
+
+        export interface ILookupPropertyType extends IPropertyType {
+            GetItems(fnCallback: any): void;
+            DataToLocalized(dataValue: any): string;
+            LocalizedToData(localized: string): any;
+            GetImageSource(record: IRecord, dataValue: any): string;
+            GetStyleId(dataValue: any): string;
+            GetIsLimitedToList(): boolean;
+            GetSerializableLookupPropType(): { items: any[]; id: string; bLimitToList: boolean };
+        }
+
+        export interface IMultiValuePropertyType extends IPropertyType {
+            bMultiValue: boolean;
+            separator: string;
+            singleValuePropType: string;
+            GetSerializableMultiValuePropType(): { singleValuePropTypeID: string; separatorChar: string; bDelayInit: boolean; };
+            InitSingleValuePropType(): void;
+            LocStrToLocStrArray(locStr: string): string[];
+            LocStrArrayToLocStr(locStrArray: string[]): string;
+        }
+
+        export class PropertyType {
+            /** Lookup property type factory, based on SP.JsGrid.PropertyType.LookupTable class.
+                displayCtrlName should be one of the following: SP.JsGrid.DisplayControl.Type.Image, SP.JsGrid.DisplayControl.Type.ImageText or SP.JsGrid.DisplayControl.Type.Text
+             */
+            static RegisterNewLookupPropType(id: string, items: any[], displayCtrlName: string, bLimitToList: boolean): void;
+
+            /** Register a custom property type. */
+            static RegisterNewCustomPropType(propType: IPropertyType, displayCtrlName: string, editControlName: string, widgetControlNames: string[]): void;
+
+            /** Register a custom property type, where display and edit controls, and also widgets, are derived from the specified parent property type. */
+            static RegisterNewDerivedCustomPropType(propType: IPropertyType, baseTypeName: string): void;
+        }
+
+        export module PropertyType {
+            export class String implements IPropertyType {
+                constructor();
+                ID: string;
+                BeginValidateNormalizeConvert(recordKey: number, fieldKey: string, newValue: any, bIsLocalized: boolean, fnCallback: { (args: { isValid: boolean; dataValue: any; normalizedLocValue: string }): void; }, fnError: any): void;
+                toString(): string;
+            }
+            export class LookupTable implements ILookupPropertyType {
+                constructor(items: any[], id: string, bLimitToList: boolean);
+                ID: string;
+                BeginValidateNormalizeConvert(recordKey: number, fieldKey: string, newValue: any, bIsLocalized: boolean, fnCallback: { (args: { isValid: boolean; dataValue: any; normalizedLocValue: string }): void; }, fnError: any): void;
+                GetItems(fnCallback: any): void;
+                DataToLocalized(dataValue: any): string;
+                LocalizedToData(localized: string): any;
+                GetImageSource(record: IRecord, dataValue: any): string;
+                GetStyleId(dataValue: any): string;
+                GetIsLimitedToList(): boolean;
+                GetSerializableLookupPropType(): { items: any[]; id: string; bLimitToList: boolean };
+
+            }
+            export class CheckBoxBoolean implements IPropertyType {
+                constructor();
+                ID: string;
+                BeginValidateNormalizeConvert(recordKey: number, fieldKey: string, newValue: any, bIsLocalized: boolean, fnCallback: { (args: { isValid: boolean; dataValue: any; normalizedLocValue: string }): void; }, fnError: any): void;
+                DataToLocalized(dataValue: any): string;
+                GetBool(dataValue: any): boolean;
+                toString(): string;
+            }
+            export class DropDownBoolean implements IPropertyType {
+                constructor();
+                ID: string;
+                BeginValidateNormalizeConvert(recordKey: number, fieldKey: string, newValue: any, bIsLocalized: boolean, fnCallback: { (args: { isValid: boolean; dataValue: any; normalizedLocValue: string }): void; }, fnError: any): void;
+                DataToLocalized(dataValue: any): string;
+                GetBool(dataValue: any): boolean;
+                toString(): string;
+            }
+            export class MultiValuePropType implements IMultiValuePropertyType {
+                ID: string;
+                BeginValidateNormalizeConvert(recordKey: number, fieldKey: string, newValue: any, bIsLocalized: boolean, fnCallback: { (args: { isValid: boolean; dataValue: any; normalizedLocValue: string }): void; }, fnError: any): void;
+                bMultiValue: boolean;
+                separator: string;
+                singleValuePropType: string;
+                GetSerializableMultiValuePropType(): { singleValuePropTypeID: string; separatorChar: string; bDelayInit: boolean; };
+                InitSingleValuePropType(): void;
+                LocStrToLocStrArray(locStr: string): string[];
+                LocStrArrayToLocStr(locStrArray: string[]): string;
+            }
+            export class HyperLink implements IPropertyType {
+                ID: string;
+                BeginValidateNormalizeConvert(recordKey: number, fieldKey: string, newValue: any, bIsLocalized: boolean, fnCallback: { (args: { isValid: boolean; dataValue: any; normalizedLocValue: string }): void; }, fnError: any): void;
+                bHyperlink: boolean;
+                DataToLocalized(dataValue: any): string;
+                GetAddress(dataValue: any): string;
+                /** Returns string like this: '"http://site.com, Site title"' */
+                GetCopyValue(record: IRecord, dataValue: any, locValue: string): string;
+                toString(): string;
+            }
+
+
+            export class Utils {
+                static RegisterDisplayControl(name: string, singleton: any, requiredFunctionNames: string[]): void;
+                static RegisterEditControl(name: string, factory: (gridContext: IEditControlGridContext, gridTextInputElement: HTMLElement) => IEditControl, requiredFunctionNames: string[]): void;
+                static RegisterWidgetControl(name: string, factory: { (ddContext: any): IPropertyType; }, requiredFunctionNames: string[]): void;
+
+                static UpdateDisplayControlForPropType(propTypeName: string, displayControlType: string): void;
+            }
+        }
+
+        export module WidgetControl {
+            export class Type {
+                static Demo: string;
+                static Date: string;
+                static AddressBook: string;
+                static Hyperlink: string;
+            }
+        }
+
+        export module Internal {
+            export class DiffTracker {
+                constructor(objBag: any, fnGetChange: Function);
+                ExternalAPI: {
+                    AnyChanges(): boolean;
+                    ChangeKeySliceInfo(): any;
+                    ChangeQuery(): any;
+                    EventSliceInfo(): any;
+                    GetChanges(optStartEvent: any, optEndEvent: any, optRecordKeys: any, bFirstStartEvent: boolean, bStartInclusive: boolean, bEndInclusive: boolean, bIncludeInvalidPropUpdates: boolean, bLastEndEvent: boolean): any;
+                    GetChangesAsJson(changeQuery: any, optfnPreProcessUpdateForSerialize?: any): string;
+                    GetUniquePropertyChanges(changeQuery: any, optfnFilter?: any): any;
+                    RegisterEvent(changeKey: IChangeKey, eventObject: any): void;
+                    UnregisterEvent(changeKey: IChangeKey, eventObject: any): void;
+                };
+                Clear(): void;
+                NotifySynchronizeToChange(changeKey: IChangeKey): void;
+                NotifyRollbackChange(changeKey: IChangeKey): void;
+                NotifyVacateChange(changeKey: IChangeKey): void;
+            }
+
+            export class PropertyUpdate implements IValue {
+                constructor(data: any, localized: string);
+                data: any;
+                localized: string;
+            }
+        }
+
+        export interface IEditActorCellContext {
+            propType: IPropertyType;
+            originalValue: IValue;
+            record: IRecord;
+            column: ColumnInfo;
+            field: GridField;
+            fieldKey: string;
+            cellExpandSpace: { left: number; top: number; fight: number; bottom: number; };
+            SetCurrentValue(value: any): void;
+        }
+
+        export interface IEditControlCellContext extends IEditActorCellContext {
+            cellWidth: number;
+            cellHeight: number;
+            cellStyle: any; //TODO: Determine correct type
+            cellRect: any;
+            NotifyExpandControl(): void;
+            NotifyEditComplete(): void;
+            Show(element: HTMLElement): void;
+            Hide(element: HTMLElement): void;
+        }
+
+
+        export module EditControl {
+
+        }
+
+        export interface IEditControl {
+            SupportedWriteMode?: SP.JsGrid.EditActorWriteType;
+            SupportedReadMode?: SP.JsGrid.EditActorReadType;
+            GetCellContext?(): IEditControlCellContext;
+            GetOriginalValue?(): IValue;
+            SetValue?(value: IValue): void;
+            Dispose(): void;
+            GetInputElement?(): HTMLElement;
+            Focus?(eventInfo: Sys.UI.DomEvent): void;
+            BindToCell(cellContext: IEditControlCellContext): void;
+            OnBeginEdit(eventInfo: Sys.UI.DomEvent): void;
+            Unbind(): void;
+            OnEndEdit(): void;
+            OnCellMove?(): void;
+            OnValueChanged?(newValue: IValue): void;
+            IsCurrentlyUsingGridTextInputElement?(): boolean;
+            SetSize?(width: number, height: number): void;
+        }
+
+
+        export class StaticDataSource {
+            constructor(jsGridData: IGridData, optFnGetPropType?: Function);
+            AddColumn(gridField: SP.JsGrid.GridField, values: IValue[]):void;
+            RemoveColumn(fieldKey: string):void;
+            InitJsGridParams(optGridParams?: JsGridControl.Parameters): JsGridControl.Parameters;
+        }
+
+        export interface IGridData {
+            MetaData: IGridMetadata
+
+            Fields: IFieldInfo[];
+            Columns: IColumnInfo[];
+
+            LocalizedTable: any[];
+            UnlocalizedTable: any[];
+            ViewInfo: any[];
+
+            MultiValueSeparator?: string;
+            LookupTableInfo?: ILookupTableInfo[];
+            PivotedColumns?: ColumnInfo[];
+            PaneLayout?: PaneLayout;
+            GanttInfo?: any;
+            AutoFilterableColumns?: boolean;
+            AutoFilterState?: any;
+            SortState?: any[];
+            HierarchyState?: any;
+            TopRecord?: number;
+            RecordCount?: number;
+            AdditionalParams?: any;
+            CellStyles?: any;
+            GroupingGridRowStyleIds?: any[];
+            UnfilteredHierarchy?: any;
+            AutoFilterEntries?: any;
+
+            ViewDepKeys?: any[];
+        }
+
+        export interface IColumnInfo {
+            /** Column title */
+            name: string;
+            /** Column image URL.
+                If not null, the column header cell will show the image instead of title text.
+                If the title is defined at the same time as the imgSrc, the title will be shown as a tooltip. */
+            imgSrc?: string;
+            /** Column identifier */
+            columnKey: string;
+            /** Column identifier */
+            fieldKey: string;
+            /** Field keys of the fields, that are displayed in this column */
+            fieldKeys: string[];
+            /** Width of the column */
+            width: number;
+            /** true by default */
+            isVisible?: boolean;
+            /** true by default */
+            isHidable?: boolean;
+            /** true by default */
+            isResizable?: boolean;
+            /** true by default */
+            isSortable?: boolean;
+            /** true by default */
+            isAutoFilterable?: boolean;
+            /** false by default */
+            isFooter?: boolean;
+        }
+
+        export interface IGridMetadata {
+            KeyColumnName: string;
+            IsGanttEnabled?: boolean;
+            IsHierarchyEnabled?: boolean;
+            IsSorted?: boolean;
+            GroupingLevel?: number;
+            GroupingPrefix?: string;
+            RecordKeyHash?: string;
+            RecordKeyOrderChanged?: any;
+            GridOperationalConstantsFieldKeyMap?: { [index: number]: string };
+
+        }
+
+        export interface IFieldInfo {
+            fieldKey: string;
+            propertyTypeId: string;
+            editMode?: EditMode;
+            hasDataValue?: boolean;
+            hasLocalizedValue?: boolean;
+            multiValue?: boolean;
+            textDirection?: TextDirection;
+            dateOnly?: boolean;
+            defaultCellStyleId?: any;
+
+        }
+
+        export interface ILookupTableInfo {
+            id: string;
+            showImage?: boolean;
+            showText?: boolean;
+            limitToList?: boolean;
+            lookup: ILookupInfo[];
+        }
+        export interface ILookupInfo {
+            localString: string;
+            value: number;
+        }
+
+
+    }
+
+    export module Utilities {
+        export class Set {
+            constructor(items?: { [item: string]: number });
+            constructor(items?: { [item: number]: number });
+            /** Returns true if the set is empty */
+            IsEmpty(): boolean;
+            /** Returns first item in the set */
+            First(): any;
+            /** Returns the underlying collection of items as dictionary.
+                Items are the keys, and values are always 1.
+                So the return value may be either { [item: string]: number } or { [item: number]: number } */
+            GetCollection(): any;
+            /** Returns all items from the set as an array */
+            ToArray(): any[];
+            /** Adds all items from array to the set, and returns the set */
+            AddArray(array: any[]): SP.Utilities.Set;
+            /** Adds an item to the set */
+            Add(item: any): any;
+            /** Removes the specified item from the set and returns the removed item */
+            Remove(item: any): any;
+            /** Clears all the items from set */
+            Clear(): SP.Utilities.Set;
+            /** Returns true if item exists in this set */
+            Contains(item: any): boolean;
+            /** Returns a copy of this set */
+            Clone(): SP.Utilities.Set;
+            /** Returns a set that contains all the items that exist only in one of the sets (this and other), but not in both */
+            SymmetricDifference(otherSet: SP.Utilities.Set): SP.Utilities.Set;
+            /** Returns a set that contains all the items that are in this set but not in the otherSet */
+            Difference(otherSet: SP.Utilities.Set): SP.Utilities.Set;
+            /** Returns a new set, that contains items from this set and otherSet */
+            Union(otherSet: SP.Utilities.Set): SP.Utilities.Set;
+            /** Adds all items from otherSet to this set, and returns this set */
+            UnionWith(otherSet: SP.Utilities.Set): SP.Utilities.Set;
+            /** Returns a new set, that contains only items that exist both in this set and the otherSet */
+            Intersection(otherSet: SP.Utilities.Set): SP.Utilities.Set;
+        }
+    }
+}
+
+
+
+
+
+declare namespace SP {
+    export class GanttControl {
+        static WaitForGanttCreation(callack: (control: GanttControl) => void): void;
+        static Instances: GanttControl[];
+        static FnGanttCreationCallback: { (control: GanttControl): void }[];
+
+        get_Columns(): SP.JsGrid.ColumnInfo[];
+    }
+}

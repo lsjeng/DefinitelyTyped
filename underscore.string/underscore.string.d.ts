@@ -1,12 +1,16 @@
 // Type definitions for underscore.string
 // Project: https://github.com/epeli/underscore.string
 // Definitions by: Ry Racherbaumer <http://github.com/rygine>
-// Definitions: https://github.com/borisyankov/DefinitelyTyped
+// Definitions: https://github.com/DefinitelyTyped/DefinitelyTyped
+
+/// <reference path="../underscore/underscore.d.ts" />
 
 interface UnderscoreStatic {
     str: UnderscoreStringStatic;
     string: UnderscoreStringStatic;
 }
+
+declare var s : UnderscoreStringStatic;
 
 interface UnderscoreStringStatic extends UnderscoreStringStaticExports {
     /**
@@ -296,7 +300,7 @@ interface UnderscoreStringStaticExports {
      * @param delimiter
      */
     words(str: string): string[];
-    
+
     /**
      * Split string by delimiter (String or RegExp).
      * /\s+/ by default.
@@ -562,7 +566,8 @@ interface UnderscoreStringStaticExports {
     toBoolean(str: string, trueValues?: any[], falseValues?: any[]): boolean;
 
 }
-declare module "underscore.string" {
-export = UnderscoreStringStatic;
+declare module 'underscore.string' {
+    var underscoreString: UnderscoreStringStatic;
+    export = underscoreString;
 }
 // TODO interface UnderscoreString extends Underscore<string>
